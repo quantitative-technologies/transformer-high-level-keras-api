@@ -293,9 +293,6 @@ if __name__ == '__main__':
     #data_train = dataset.data_pipeline(is_training=True, batch_size=BATCH_SIZE, input_seqlen=MAX_LEN, target_seqlen=MAX_LEN)
     #data_eval = dataset.data_pipeline(is_training=False, batch_size=BATCH_SIZE, input_seqlen=MAX_LEN, target_seqlen=MAX_LEN)
     [end_index] = tokenizers.targets.get_reserved_token_indices('end')
-    seq_accuracy_metric = get_sequence_accuracy_metric(end_token=end_index,
-                                                       batch_size=BATCH_SIZE,
-                                                       max_len_target=MAX_LEN)
 
     transformer_model = get_compiled_model(num_layers=4, d_model=128,
                                            num_heads=flags.heads, dff=512,
