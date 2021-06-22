@@ -6,3 +6,4 @@ inst/python/tokenizers/*
 html2pdf*
 **/README_cache/**
 .Rproj.user
+.idea/**

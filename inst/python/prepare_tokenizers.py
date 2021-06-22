@@ -36,7 +36,7 @@ def prepare_tokenizers(corpus_pair,
     :param reuse: If pair according to name is already saved, load and return it, when reuse. Otherwise will force the
         creation of new tokenizers.
     :param bert_tokenizer_params:
-    :return: The pair of tokenizers
+    :return: The pair of tokenizers, and whether they were just created
     """
     p_tokenizer_dir = Path(tokenizer_dir)
     model_name = (p_tokenizer_dir / name).as_posix()
@@ -62,4 +62,4 @@ def prepare_tokenizers(corpus_pair,
         tf.saved_model.save(tokenizers, model_name)
         t.toc('Creating tokenizers took')
 
-    return tokenizers
+    return tokenizers, create_tokenizers

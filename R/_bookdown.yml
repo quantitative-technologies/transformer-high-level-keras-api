@@ -3,9 +3,9 @@ site: "bookdown::bookdown_site"
 output:
   bookdown::pdf_document2:
     includes:
-      in_header: "macros.tex"
+      #in_header: "macros.tex"
   #bookdown::html_book:
 delete_merged_file: true
 
-rmd_files: ['README.Rmd']
+rmd_files: ['transformer.Rmd']
 ---
