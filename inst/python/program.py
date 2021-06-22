@@ -205,22 +205,23 @@ if __name__ == '__main__':
     keys = metadata.supervised_keys
     train_examples, eval_examples = examples['train'], examples['validation']
 
-    tokenizers = prepare_tokenizers(train_examples,
-                                    lower_case=True,
-                                    input_vocab_size=2 ** 13,
-                                    target_vocab_size=2 ** 13,
-                                    name=metadata.name + '-' + keys[0] + '_to_' + keys[1],
-                                    tokenizer_dir=TOKENIZER_DIR,
-                                    reuse=reuse_tokenizers)
+    tokenizers, new_toks = prepare_tokenizers(
+        train_examples,
+        lower_case=True,
+        input_vocab_size=2 ** 13,
+        target_vocab_size=2 ** 13,
+        name=metadata.name + '-' + keys[0] + '_to_' + keys[1],
+        tokenizer_dir=TOKENIZER_DIR,
+        reuse=reuse_tokenizers)
 
     dataset = Dataset(tokenizers, batch_size=BATCH_SIZE,
                       input_seqlen=max_len_input, target_seqlen=max_len_target)
 
     input_vocab_size = tokenizers.inputs.get_vocab_size()
     target_vocab_size = tokenizers.targets.get_vocab_size()
-    print("Number of input tokens: {}".format(input_vocab_size))
-    print("Number of target tokens: {}".format(target_vocab_size))
-
+    if new_toks:
+        print("Number of input tokens: {}".format(input_vocab_size))
+        print("Number of target tokens: {}".format(target_vocab_size))
 
     data_train = dataset.data_pipeline(train_examples,
                                        num_parallel_calls=tf.data.experimental.AUTOTUNE)
