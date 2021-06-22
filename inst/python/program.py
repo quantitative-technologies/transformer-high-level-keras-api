@@ -104,13 +104,6 @@ def get_compiled_model(num_layers, d_model, num_heads, dff, input_vocab_size,
     return model
 
 
-# def show_blue_scores(reference, prediction):
-#     scores = bleu_scores(reference, prediction)
-#     scores = [s * 100 for s in scores]
-#     print(
-#         f'BLEU scores. BLEU-1: {scores[0]:.1f}, BLEU-2: {scores[1]:.1f}, BLEU-3: {scores[2]:.1f}, BLEU-4: {scores[3]:.1f}, BLUE-4 Smoothed: {scores[4]:.1f}')
-
-
 if __name__ == '__main__':
     logging.getLogger('tensorflow').setLevel(logging.ERROR)  # suppress warnings
     # Set tensorflow logging level (no warnings)
@@ -220,13 +213,6 @@ if __name__ == '__main__':
                                     tokenizer_dir=TOKENIZER_DIR,
                                     reuse=reuse_tokenizers)
 
-    # dataset = DatasetAdaptor(train_examples,
-    #                          eval_examples,
-    #                          tokenizers=tokenizers,
-    #                          target_vocab_size=2 ** 13,
-    #                          name=metadata.name,
-    #                          keys=metadata.supervised_keys)
-
     dataset = Dataset(tokenizers, batch_size=BATCH_SIZE,
                       input_seqlen=max_len_input, target_seqlen=max_len_target)
 
@@ -235,65 +221,11 @@ if __name__ == '__main__':
     print("Number of input tokens: {}".format(input_vocab_size))
     print("Number of target tokens: {}".format(target_vocab_size))
 
-    # def tokenize_pairs3(x, y):
-    #     inputs = tokenizers.inputs.tokenize(x) #.to_tensor()
-    #     targets = tokenizers.targets.tokenize(y) #.to_tensor()
-    #
-    #     decoder_inputs = targets[:-1]
-    #     decoder_targets = targets[1:]
-    #     return dict(encoder_input=inputs, decoder_input=decoder_inputs), decoder_targets
-    #
-    # def tokenize_pairs4(x, y):
-    #     return tokenize_pairs3([x], [y])
-    #
-    # def filter_max_length(max_x_length, max_y_length):
-    #     def filter(x, y):
-    #         return tf.logical_and(tf.size(x['encoder_input']) <= max_x_length,
-    #                               tf.size(y) < max_y_length)
-    #     return filter
-
-    #BUFFER_SIZE = 20000
-    #BATCH_SIZE = 64
-
-
-    # def make_batches(ds):
-    #     return (
-    #         ds
-    #             #.cache()
-    #             .map(tokenize_pairs4)
-    #             .filter(filter_max_length(max_x_length=MAX_LEN, max_y_length=MAX_LEN))
-    #             # .shuffle(BUFFER_SIZE)
-    #             .padded_batch(BATCH_SIZE)
-    #             .cache()
-    #             .prefetch(tf.data.AUTOTUNE))
-    #
-    #
-    # def make_batches2(ds):
-    #     return (
-    #         ds
-    #             .cache()
-    #             .map(tokenize_pairs4)
-    #             .filter(filter_max_length(max_x_length=MAX_LEN, max_y_length=MAX_LEN))
-    #             # .shuffle(BUFFER_SIZE)
-    #             #.padded_batch(BATCH_SIZE)
-    #             .prefetch(tf.data.AUTOTUNE))
-
-
-    #data_train = train_examples.map(tokenize_pairs4)
-
-    #data_train = make_batches2(train_examples)
 
     data_train = dataset.data_pipeline(train_examples,
                                        num_parallel_calls=tf.data.experimental.AUTOTUNE)
-    #data_train = data_train.map(tokenize_pairs3, num_parallel_calls=6)
-
-    #data_eval = make_batches(eval_examples)
     data_eval = dataset.data_pipeline(eval_examples,
                                       num_parallel_calls=tf.data.experimental.AUTOTUNE)
-
-    #data_train = dataset.data_pipeline(is_training=True, batch_size=BATCH_SIZE, input_seqlen=MAX_LEN, target_seqlen=MAX_LEN)
-    #data_eval = dataset.data_pipeline(is_training=False, batch_size=BATCH_SIZE, input_seqlen=MAX_LEN, target_seqlen=MAX_LEN)
-    #[end_index] = tokenizers.targets.get_reserved_token_indices('end')
 
     transformer_model = get_compiled_model(num_layers=4, d_model=128,
                                            num_heads=flags.heads, dff=512,
@@ -329,16 +261,8 @@ if __name__ == '__main__':
                 print(f"\nInput: {x.numpy()}")
                 print(f"Prediction: {x_translated}")
                 print(f"Ground truth: {y}")
-                #show_blue_scores(y.numpy().decode('utf-8'), x_translated)
                 print(sacrebleu.sentence_bleu([y.numpy().decode('utf-8')],
                                               [x_translated]))
-        #  references = [y for _, y in iter(eval_examples)]
-
-        #i = 0
-        # for x, y in iter(eval_examples):
-        #     i = i + 1
-        #     prediction = translate(transformer_model, x.numpy(), tokenizers, MAX_LEN)
-        #     print(f"{i}th prediction: {prediction}")
         else:
             total = len(eval_examples)
             references = list()
@@ -348,24 +272,8 @@ if __name__ == '__main__':
                 if z is not None:
                     references.append(y.numpy().decode('utf-8'))
                     predictions.append(z)
-                # i = i + 1
-                # if i == 5:
-                #     break
 
             print(sacrebleu.corpus_bleu(predictions, [references]))
-
-
-
-            #predictions = [translate(transformer_model, x.numpy(), tokenizers, MAX_LEN) for x, _ in iter(eval_examples)]
-
-            # scores = bleu_scores(y.numpy().decode('utf-8'), x_translated)
-            # scores = [s * 100 for s in scores]
-            # print(f'BLEU scores. BLEU-1: {scores[0]:.1f}, BLEU-2: {scores[1]:.1f}, BLEU-3: {scores[2]:.1f}, BLEU-4: {scores[3]:.1f}, BLUE-4 Smoothed: {scores[4]:.1f}')
-
-            # if i >= 17:
-            #     break
-            # i = i + 1
-
     elif flags.mode == 'input':
         if not load_weights(transformer_model, flags.checkpoint):
             print("No model trained yet", file=sys.stderr)
@@ -381,13 +289,5 @@ if __name__ == '__main__':
             print(f"Ground truth: {example['target']}")
             if flags.show_bleu:
                 print(sacrebleu.sentence_bleu([example['target']], [translation]))
-                #show_blue_scores(example['target'], translation)
-
-        #del transformer_model
-        sys.exit(0)
-
-        example_input = "tinham comido peixe com batatas fritas ?"
-        translation = translate(transformer_model, example_input, tokenizers, MAX_LEN)
-        print("Prediction: {}".format(translation))
 
 
