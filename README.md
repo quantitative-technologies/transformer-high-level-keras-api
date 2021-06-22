@@ -122,3 +122,14 @@ BLEU = 31.04 75.0/47.4/22.2/11.8 (BP = 1.000 ratio = 1.053 hyp_len = 20 ref_len 
 ```
 
 We can see it does much better on the last difficult sentence. 
+
+There is an `evaluation` mode we can use to calculate the corpus level BLEU 
+score. This take some time as auto-regressive inference is relatively slow:
+
+```bash
+$ python -m program --mode evaluate -c 16
+Loading checkpoint train/checkpoint.16.ckpt
+100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 1193/1193 [29:09<00:00,  1.47s/it]
+BLEU = 27.76 59.8/34.1/21.4/13.6 (BP = 1.000 ratio = 1.015 hyp_len = 15804 ref_len = 15563)
+
+```
