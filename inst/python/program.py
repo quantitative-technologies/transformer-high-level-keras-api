@@ -60,9 +60,10 @@ def load_weights(model, checkpoint=None):
     model.load_weights(checkpoint).expect_partial()
     return True
 
+
 def get_compiled_model(num_layers, d_model, num_heads, dff, input_vocab_size,
-                       target_vocab_size, end_token, batch_size, max_len_input,
-                       max_len_target, dropout_rate,
+                       target_vocab_size, max_len_input, max_len_target,
+                       dropout_rate,
                        embedding_initializer='uniform',
                        kernel_initializer='glorot_uniform', eagerly=False):
     """ Create the transformer_model model and compile it
@@ -83,14 +84,14 @@ def get_compiled_model(num_layers, d_model, num_heads, dff, input_vocab_size,
     :return:
     """
     model = transformer(num_layers=num_layers, d_model=d_model,
-                              num_heads=num_heads, dff=dff,
-                              input_vocab_size=input_vocab_size.numpy(),
-                              target_vocab_size=target_vocab_size.numpy(),
-                              pe_input_max=max_len_input,
-                              pe_target_max=max_len_target,
-                              dropout_rate=dropout_rate,
-                              embedding_initializer=embedding_initializer,
-                              kernel_initializer=kernel_initializer)
+                        num_heads=num_heads, dff=dff,
+                        input_vocab_size=input_vocab_size.numpy(),
+                        target_vocab_size=target_vocab_size.numpy(),
+                        pe_input_max=max_len_input,
+                        pe_target_max=max_len_target,
+                        dropout_rate=dropout_rate,
+                        embedding_initializer=embedding_initializer,
+                        kernel_initializer=kernel_initializer)
 
     learning_rate = CustomSchedule(d_model=d_model)
     optimizer = Adam(learning_rate, beta_1=0.9, beta_2=0.98, epsilon=1e-9)
@@ -103,11 +104,11 @@ def get_compiled_model(num_layers, d_model, num_heads, dff, input_vocab_size,
     return model
 
 
-def show_blue_scores(reference, prediction):
-    scores = bleu_scores(reference, prediction)
-    scores = [s * 100 for s in scores]
-    print(
-        f'BLEU scores. BLEU-1: {scores[0]:.1f}, BLEU-2: {scores[1]:.1f}, BLEU-3: {scores[2]:.1f}, BLEU-4: {scores[3]:.1f}, BLUE-4 Smoothed: {scores[4]:.1f}')
+# def show_blue_scores(reference, prediction):
+#     scores = bleu_scores(reference, prediction)
+#     scores = [s * 100 for s in scores]
+#     print(
+#         f'BLEU scores. BLEU-1: {scores[0]:.1f}, BLEU-2: {scores[1]:.1f}, BLEU-3: {scores[2]:.1f}, BLEU-4: {scores[3]:.1f}, BLUE-4 Smoothed: {scores[4]:.1f}')
 
 
 if __name__ == '__main__':
@@ -125,13 +126,13 @@ if __name__ == '__main__':
     parser.add_argument(
         '--mode',
         default=DEFAULT_MODE,
-        help="Operation mode: train, evaluate or input(default: {})".format(DEFAULT_MODE)
+        help=f"Operation mode: train, evaluate or input (default: {DEFAULT_MODE})"
     )
     parser.add_argument(
         '--epochs',
         type=int,
         default=EPOCHS,
-        help="Number of epoch to train (default: {})".format(EPOCHS)
+        help=f"Number of epoch to train (default: {EPOCHS})"
     )
     parser.add_argument(
         '--max-len',
