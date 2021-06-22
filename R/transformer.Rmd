@@ -1,12 +1,12 @@
 ---
-title: "Transformer Implementation from Scratch following Keras Guidelines"
+title: "Transformer Implementation with the High-Level Keras API"
 author: "James Hirschorn"
 date: "June 22, 2021"
 output:
   bookdown::pdf_document2: 
     #pandoc_args: --listings
     includes:
-      in_header: "macros.tex"
+      #in_header: "macros.tex"
   html_document:
     highlight: textmate
     keep_md: true
@@ -32,6 +32,12 @@ The purpose of this article is to present a TensorFlow implementation of the tra
 Using a high-level API makes the learning process more straightforward and the code much briefer. It also avoids reinventing the wheel which can potentially introduce errors. 
 
 While the primary emphasis is on implementation, we also give our own in depth explanation of the transformer model. 
+
+## Reqirements
+
+This library requires TensorFlow version 2.5.0. It *may* work on newer versions as well, and we have tested it on the version 2.6 development branch. The full requirements are listed in `inst/python/requirements.txt`. 
+
+Please note the root directory for the actual `python` code is `inst/python`. 
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -102,13 +108,13 @@ from prepare_tokenizers import prepare_tokenizers
 
 TRAIN_DIR = 'train'
 
-tokenizers = prepare_tokenizers(train_examples,
-                                lower_case=True,
-                                input_vocab_size=2 ** 13,
-                                target_vocab_size=2 ** 13,
-                                name=metadata.name + '-' + keys[0] + '_to_' + keys[1],
-                                tokenizer_dir=TRAIN_DIR,
-                                reuse=True)
+tokenizers, _ = prepare_tokenizers(train_examples,
+                                   lower_case=True,
+                                   input_vocab_size=2 ** 13,
+                                   target_vocab_size=2 ** 13,
+                                   name=metadata.name + '-' + keys[0] + '_to_' + keys[1],
+                                   tokenizer_dir=TRAIN_DIR,
+                                   reuse=True)
                                 
 input_vocab_size = tokenizers.inputs.get_vocab_size()
 target_vocab_size = tokenizers.targets.get_vocab_size()
