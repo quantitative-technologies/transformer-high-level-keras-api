@@ -262,7 +262,7 @@ if __name__ == '__main__':
                 # Cannot translate sentences longer than flags.max_len
                 if x_translated is None:
                     continue
-                print(f"\nInput: {x.numpy()}")
+                print(f"\nInput: {x.numpy().decode('utf-8')}")
                 print(f"Prediction: {x_translated}")
                 print(f"Ground truth: {y}")
                 print(sacrebleu.sentence_bleu([y.numpy().decode('utf-8')],
@@ -287,7 +287,7 @@ if __name__ == '__main__':
 
         for example in data['examples']:
             translation = translate(transformer_model, example['input'], tokenizers, MAX_LEN)
-            print(f"\nInput: {example['input'].decode('utf-8')}")
+            print(f"\nInput: {example['input']}")
             print(f"Prediction: {translation}")
             print(f"Ground truth: {example['target']}")
             if flags.show_bleu:
