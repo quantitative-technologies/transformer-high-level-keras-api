@@ -2,7 +2,7 @@
 
 We searched through numerous tutorials including the [official 
 TensorFlow transformer tutorial](https://www.tensorflow.org/tutorials/text/transformer "Transformer model for language understanding"),
-but none of them used the high-level API which includes built-in methods for 
+but none of them used the high-level Keras API which includes built-in methods for 
 training and evaluation. Since this posed difficulties
 when trying out our own customizations, we decided to implement the transformer 
 from scratch following the guidelines on standardizing on Keras for on the 
