@@ -1,5 +1,5 @@
-tensorflow_text=2.5
-tf==2.5
-tensorflow_datasets
+tensorflow-text==2.5
+tensorflow==2.5
+tensorflow-datasets
 pytictoc
 sacrebleu
