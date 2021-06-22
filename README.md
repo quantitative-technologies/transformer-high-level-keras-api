@@ -21,20 +21,11 @@ for 20 epochs:
 
 ```bash
 $ python -m program --epochs 20
-Downloading and preparing dataset 124.94 MiB (download: 124.94 MiB, generated: Unknown siz
-e, total: 124.94 MiB) to /home/rstudio/tensorflow_datasets/ted_hrlr_translate/pt_to_en/1.0
-.0...
-Extraction completed...: 100%|████████████████████████████████████████████████████████████
-███████████████████████████████████████████████████████████████████| 1/1 [00:04<00:00,  4.
-46s/ file]
-Dl Size...: 100%|█████████████████████████████████████████████████████████████████████████
-████████████████████████████████████████████████████████████████| 124/124 [00:04<00:00, 27
-.79 MiB/s]
-Dl Completed...: 100%|████████████████████████████████████████████████████████████████████
-████████████████████████████████████████████████████████████████████| 1/1 [00:04<00:00,  4
-.46s/ url]
-Dataset ted_hrlr_translate downloaded and prepared to /home/rstudio/tensorflow_datasets/te
-d_hrlr_translate/pt_to_en/1.0.0. Subsequent calls will reuse this data.                             
+Downloading and preparing dataset 124.94 MiB (download: 124.94 MiB, generated: Unknown size, total: 124.94 MiB) to /home/rstudio/tensorflow_datasets/ted_hrlr_translate/pt_to_en/1.0.0...
+Extraction completed...: 100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 1/1 [00:04<00:00,  4.46s/ file]
+Dl Size...: 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 124/124 [00:04<00:00, 27.79 MiB/s]
+Dl Completed...: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 1/1 [00:04<00:00,  4.46s/ url]
+Dataset ted_hrlr_translate downloaded and prepared to /home/rstudio/tensorflow_datasets/ted_hrlr_translate/pt_to_en/1.0.0. Subsequent calls will reuse this data.                             
 Creating tokenizers. Please be patient...                                                                                                                                                     
 Creating tokenizers took 139.751894 seconds.
 Number of input tokens: 8318
@@ -45,22 +36,89 @@ Epoch 1/20
 Epoch 2/20
 700/700 [==============================] - 46s 60ms/step - loss: 4.9205 - accuracy: 0.2521 - val_loss: 4.6257 - val_accuracy: 0.2788
 ...
-Epoch 14/20                                                                                                                                                                                   
-700/700 [==============================] - 46s 61ms/step - loss: 1.6252 - accuracy: 0.6561 - SequenceAccuracy: 0.6504 - val_loss: 2.2770 - val_accuracy: 0.6016 - val_SequenceAccuracy: 0.5974
 Epoch 15/20
-700/700 [==============================] - 47s 61ms/step - loss: 1.5517 - accuracy: 0.6667 - SequenceAccuracy: 0.6612 - val_loss: 2.2690 - val_accuracy: 0.6036 - val_SequenceAccuracy: 0.5961
+700/700 [==============================] - 46s 61ms/step - loss: 1.5657 - accuracy: 0.6654 - val_loss: 2.2668 - val_accuracy: 0.6082
 Epoch 16/20
-700/700 [==============================] - 47s 62ms/step - loss: 1.4866 - accuracy: 0.6769 - SequenceAccuracy: 0.6717 - val_loss: 2.2885 - val_accuracy: 0.6053 - val_SequenceAccuracy: 0.6034
+700/700 [==============================] - 46s 60ms/step - loss: 1.5002 - accuracy: 0.6753 - val_loss: 2.2611 - val_accuracy: 0.6082
 Epoch 17/20
-700/700 [==============================] - 47s 62ms/step - loss: 1.4315 - accuracy: 0.6853 - SequenceAccuracy: 0.6803 - val_loss: 2.2929 - val_accuracy: 0.6030 - val_SequenceAccuracy: 0.6000
+700/700 [==============================] - 46s 60ms/step - loss: 1.4445 - accuracy: 0.6837 - val_loss: 2.2658 - val_accuracy: 0.6071
 Epoch 18/20
-700/700 [==============================] - 46s 61ms/step - loss: 1.3773 - accuracy: 0.6939 - SequenceAccuracy: 0.6885 - val_loss: 2.2870 - val_accuracy: 0.6073 - val_SequenceAccuracy: 0.6037
+700/700 [==============================] - 46s 60ms/step - loss: 1.3911 - accuracy: 0.6912 - val_loss: 2.2745 - val_accuracy: 0.6082
 Epoch 19/20
-700/700 [==============================] - 46s 61ms/step - loss: 1.3300 - accuracy: 0.7016 - SequenceAccuracy: 0.6967 - val_loss: 2.2925 - val_accuracy: 0.6068 - val_SequenceAccuracy: 0.6027
+700/700 [==============================] - 46s 61ms/step - loss: 1.3450 - accuracy: 0.6991 - val_loss: 2.2885 - val_accuracy: 0.6105
 Epoch 20/20
-700/700 [==============================] - 46s 61ms/step - loss: 1.2861 - accuracy: 0.7082 - SequenceAccuracy: 0.7033 - val_loss: 2.3137 - val_accuracy: 0.6102 - val_SequenceAccuracy: 0.6076
-
+700/700 [==============================] - 46s 61ms/step - loss: 1.2998 - accuracy: 0.7059 - val_loss: 2.3034 - val_accuracy: 0.6133
 ```
 
 Notice that the data will only be downloaded and prepared the first time it is accessed.
 
+To perform inference with the trained model, we use the `input` mode, which 
+translates the sentences from the input file which is `inputs.pt_en.json` by
+default, with the following format:
+
+```json
+{
+  "examples":
+  [
+    {
+      "input": "este é um problema que temos que resolver.",
+      "target": "this is a problem we have to solve ."
+    },
+    {
+      "input": "os meus vizinhos ouviram sobre esta ideia.",
+      "target": "and my neighboring homes heard about this idea ."
+    },
+    {
+      "input": "vou então muito rapidamente partilhar convosco algumas histórias de algumas coisas mágicas que aconteceram.",
+      "target": "so i \\'ll just share with you some stories very quickly of some magical things that have happened ."
+    }
+  ]
+}
+```
+
+We also use the `--show-bleu` option to show the BLEU sentence score for each example:
+
+```bash
+$ python -m program --mode input --show-bleu
+Loading checkpoint train/checkpoint.20.ckpt
+
+Input: este é um problema que temos que resolver.
+Prediction: this is a problem that we have to solve .
+Ground truth: this is a problem we have to solve .
+BLEU = 66.90 100.0/87.5/71.4/50.0 (BP = 0.895 ratio = 0.900 hyp_len = 9 ref_len = 10)
+
+Input: os meus vizinhos ouviram sobre esta ideia.
+Prediction: my neighbors have heard of this idea .
+Ground truth: and my neighboring homes heard about this idea .
+BLEU = 20.16 55.6/25.0/14.3/8.3 (BP = 1.000 ratio = 1.125 hyp_len = 9 ref_len = 8)
+
+Input: vou então muito rapidamente partilhar convosco algumas histórias de algumas coisas mágicas que aconteceram.
+Prediction: so i ' m going to share with you a few stories of some very magical things that happened .
+Ground truth: so i \'ll just share with you some stories very quickly of some magical things that have happened .
+BLEU = 17.04 70.0/36.8/11.1/2.9 (BP = 1.000 ratio = 1.000 hyp_len = 20 ref_len = 20)
+```
+
+The training output shows that the best validation loss occured at epoch 16.
+The `--checkpoint` (or `-c`) flag can be used to select this checkpoint:
+
+```bash
+$ python -m program --mode input -c 16 --show-bleu
+Loading checkpoint train/checkpoint.16.ckpt
+
+Input: este é um problema que temos que resolver.
+Prediction: this is a problem that we have to fix .
+Ground truth: this is a problem we have to solve .
+BLEU = 39.94 88.9/62.5/42.9/16.7 (BP = 0.895 ratio = 0.900 hyp_len = 9 ref_len = 10)
+
+Input: os meus vizinhos ouviram sobre esta ideia.
+Prediction: my neighbors heard about this idea .
+Ground truth: and my neighboring homes heard about this idea .
+BLEU = 46.71 66.7/50.0/42.9/33.3 (BP = 1.000 ratio = 1.286 hyp_len = 9 ref_len = 7)
+
+Input: vou então muito rapidamente partilhar convosco algumas histórias de algumas coisas mágicas que aconteceram.
+Prediction: so i ' ll very quickly share with you some stories with some very magical things that happened .
+Ground truth: so i \'ll just share with you some stories very quickly of some magical things that have happened .
+BLEU = 31.04 75.0/47.4/22.2/11.8 (BP = 1.000 ratio = 1.053 hyp_len = 20 ref_len = 19)
+```
+
+We can see it does much better on the last difficult sentence. 
