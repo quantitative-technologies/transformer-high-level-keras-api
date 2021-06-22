@@ -21,7 +21,7 @@ from pytictoc import TicToc
 from transformer.dataset import Dataset
 from transformer.transformer import transformer
 from transformer.loss import MaskedSparseCategoricalCrossentropy
-from transformer.autoregression import autoregress, translate, evaluate_single
+from transformer.autoregression import autoregress, translate
 from transformer.schedule import CustomSchedule
 from prepare_tokenizers import prepare_tokenizers
 
