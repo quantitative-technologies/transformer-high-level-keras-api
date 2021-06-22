@@ -1,0 +1,8 @@
+.Rproj.user/**
+inst/python/train/*
+inst/python/tokenizers/*
+**/__pycache__
+**/_main.*
+html2pdf*
+**/README_cache/**
+.Rproj.user

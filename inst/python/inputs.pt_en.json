@@ -1,0 +1,17 @@
+{
+  "examples":
+  [
+    {
+      "input": "este é um problema que temos que resolver.",
+      "target": "this is a problem we have to solve ."
+    },
+    {
+      "input": "os meus vizinhos ouviram sobre esta ideia.",
+      "target": "and my neighboring homes heard about this idea ."
+    },
+    {
+      "input": "vou então muito rapidamente partilhar convosco algumas histórias de algumas coisas mágicas que aconteceram.",
+      "target": "so i \\'ll just share with you some stories very quickly of some magical things that have happened ."
+    }
+  ]
+}

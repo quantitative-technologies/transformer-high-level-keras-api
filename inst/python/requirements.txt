@@ -1,0 +1,12 @@
+# 2.6.0.dev20210516 => avoid binary incompatibilities until 2.5 is out.
+
+# `BertTokenizer.detokenize` is not in `tf-text` stable yet (currently 2.4.3).
+tensorflow_text_nightly==2.6.0.dev20210516
+
+# tf-text-nightly resquires tf-nightly
+tf-nightly==2.6.0.dev20210516
+
+tensorflow_datasets
+pytictoc
+#nltk
+sacrebleu
