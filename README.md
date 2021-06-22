@@ -121,9 +121,9 @@ Ground truth: so i \'ll just share with you some stories very quickly of some ma
 BLEU = 31.04 75.0/47.4/22.2/11.8 (BP = 1.000 ratio = 1.053 hyp_len = 20 ref_len = 19)
 ```
 
-We can see it does much better on the last difficult sentence. 
+Indeed it does much better on the last difficult sentence. 
 
-There is an `evaluation` mode we can use to calculate the corpus level BLEU 
+There is also the `evaluation` mode to calculate the corpus level BLEU 
 score. This take some time as auto-regressive inference is relatively slow:
 
 ```bash
