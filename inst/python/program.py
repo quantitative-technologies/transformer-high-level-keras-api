@@ -60,13 +60,6 @@ def load_weights(model, checkpoint=None):
     model.load_weights(checkpoint).expect_partial()
     return True
 
-
-def get_sequence_accuracy_metric(end_token, batch_size, max_len_target):
-    seq_accuracy = SequenceAccuracy(end_token=end_token,
-                                    batch_size=batch_size, max_len=max_len_target, name='SequenceAccuracy')
-    return seq_accuracy
-
-
 def get_compiled_model(num_layers, d_model, num_heads, dff, input_vocab_size,
                        target_vocab_size, end_token, batch_size, max_len_input,
                        max_len_target, dropout_rate,
@@ -102,8 +95,6 @@ def get_compiled_model(num_layers, d_model, num_heads, dff, input_vocab_size,
     learning_rate = CustomSchedule(d_model=d_model)
     optimizer = Adam(learning_rate, beta_1=0.9, beta_2=0.98, epsilon=1e-9)
 
-    seq_accuracy = get_sequence_accuracy_metric(end_token.numpy(), batch_size,
-                                                max_len_target)
     model.compile(optimizer=optimizer,
                   loss=MaskedSparseCategoricalCrossentropy(),
                   metrics=['accuracy'],
