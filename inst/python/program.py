@@ -212,9 +212,11 @@ if __name__ == '__main__':
                                    with_info=True, as_supervised=True)
     keys = metadata.supervised_keys
     train_examples, eval_examples = examples['train'], examples['validation']
+    # enforce maximum
+    train_examples = train_examples.take(MAX_TRAIN_DATA_SIZE)
 
     tokenizers, new_toks = prepare_tokenizers(
-        train_examples.take(MAX_TRAIN_DATA_SIZE),
+        train_examples,
         lower_case=True,
         input_vocab_size=2 ** 13,
         target_vocab_size=2 ** 13,
