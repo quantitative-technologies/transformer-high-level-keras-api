@@ -249,7 +249,6 @@ if __name__ == '__main__':
         transformer_model.fit(data_train, epochs=flags.epochs, steps_per_epoch=STEPS_PER_EPOCH, validation_data=data_eval, callbacks=model_checkpoint_callback)
     elif flags.mode == 'evaluate':
         if not load_weights(transformer_model, flags.checkpoint):
-            print("No model trained yet", file=sys.stderr)
             sys.exit(1)
 
         if flags.show_bleu:
@@ -277,7 +276,6 @@ if __name__ == '__main__':
             print(sacrebleu.corpus_bleu(predictions, [references]))
     elif flags.mode == 'input':
         if not load_weights(transformer_model, flags.checkpoint):
-            print("No model trained yet", file=sys.stderr)
             sys.exit(1)
 
         with open(flags.input_filename) as f:
