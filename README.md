@@ -127,7 +127,7 @@ BLEU = 31.04 75.0/47.4/22.2/11.8 (BP = 1.000 ratio = 1.053 hyp_len = 20 ref_len 
 Indeed it does much better on the last difficult sentence. 
 
 There is also the `evaluation` mode to calculate the corpus level BLEU 
-score. This take some time as auto-regressive inference is relatively slow:
+score. This takes some time as auto-regressive inference is relatively slow:
 
 ```bash
 $ python -m program --mode evaluate -c 16
@@ -185,7 +185,7 @@ Epoch 10/10
 2686/2686 [==============================] - 224s 82ms/step - loss: 2.4852 - accuracy: 0.5291 - val_loss: 2.5941 - val_accuracy: 0.5231
 ```
 
-If `--show-bleu` is specified in evaluation mode, then the program iterates
+If `--show-bleu` is specified in `evaluation` mode, then the program iterates
 through the validation set, making a prediction for each example and then
 computing its BLEU score.
 
