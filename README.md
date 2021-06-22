@@ -1,6 +1,6 @@
-# Transformer Implementation From Scratch Following Keras Guidelines
+# Transformer Implementation with the High-Level Keras API
 
-We searched through numerous tutorial including the official TensorFlow tutorial ... 
+We searched through numerous tutorials including the official TensorFlow tutorial ... 
 but none of them followed the Keras implementation guidelines. Since this posed difficulties
 when trying out our own customizations, we decided to implement from scratch following
 the guidelines (to our best understanding).
@@ -131,5 +131,21 @@ $ python -m program --mode evaluate -c 16
 Loading checkpoint train/checkpoint.16.ckpt
 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 1193/1193 [29:09<00:00,  1.47s/it]
 BLEU = 27.76 59.8/34.1/21.4/13.6 (BP = 1.000 ratio = 1.015 hyp_len = 15804 ref_len = 15563)
+```
+
+The `--resource` and `--dataset` flags are used to select a datatset from the
+`tensorflow-datasets` library. Next we train the transformer on the German to 
+English dataset in the `wmt_t2t_translate` resource.  This time we allow both
+input and target sequences up to 60 tokens in length using the `--max-len` 
+argument. It is important to `--clear` out the checkpoints from the previous 
+model.
+
+```bash
+$ python -m program --dataset tr_to_en --epochs 20 --max-len 60 --clear
+Downloading and preparing dataset 1.61 GiB (download: 1.61 GiB, generated: Unknown size, total: 1.61 GiB) to /home/rstudio/tensorflow_datasets/wmt_t2t_translate/de-en/1.0.0...               
+Extraction completed...: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 4/4 [1:01:21<00:00, 920.44s/ file]
+Dl Size...: 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 1645/1645 [1:01:21<00:00,  2.24s/ MiB]
+Dl Completed...: 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 4/4 [1:01:21<00:00, 920.44s/ url]
+Extraction completed...: 0 file [00:00, ? file/s]
 
 ```
