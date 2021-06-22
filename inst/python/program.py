@@ -299,7 +299,6 @@ if __name__ == '__main__':
                                            num_heads=flags.heads, dff=512,
                                            input_vocab_size=input_vocab_size,
                                            target_vocab_size=target_vocab_size,
-                                           batch_size=BATCH_SIZE,
                                            max_len_input=max_len_input,
                                            max_len_target=max_len_target,
                                            dropout_rate=flags.dropout,
@@ -317,7 +316,7 @@ if __name__ == '__main__':
         transformer_model.fit(data_train, epochs=flags.epochs, steps_per_epoch=STEPS_PER_EPOCH, validation_data=data_eval, callbacks=model_checkpoint_callback)
     elif flags.mode == 'evaluate':
         if not load_weights(transformer_model, flags.checkpoint):
-            print("No model trained yet", file=sys.error)
+            print("No model trained yet", file=sys.stderr)
             sys.exit(1)
 
         if flags.show_bleu:
