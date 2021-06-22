@@ -317,7 +317,7 @@ if __name__ == '__main__':
 
         transformer_model.fit(data_train, epochs=flags.epochs, steps_per_epoch=STEPS_PER_EPOCH, validation_data=data_eval, callbacks=model_checkpoint_callback)
     elif flags.mode == 'evaluate':
-        if not load_weights(transformer_model):
+        if not load_weights(transformer_model, flags.checkpoint):
             print("No model trained yet", file=sys.error)
             sys.exit(1)
 
