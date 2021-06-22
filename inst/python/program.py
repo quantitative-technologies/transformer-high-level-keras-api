@@ -25,8 +25,9 @@ from transformer.autoregression import autoregress, translate
 from transformer.schedule import CustomSchedule
 from prepare_tokenizers import prepare_tokenizers
 
-base_dir = os.getcwd()
-#TRAIN_DIR = os.path.join(base_dir, 'train')
+#base_dir = os.getcwd()
+RESOURCE = 'ted_hrlr_translate'
+DATASET = 'pt_to_en'
 TRAIN_DIR = 'train'
 TOKENIZER_DIR = TRAIN_DIR
 DEFAULT_MODE = 'train'
@@ -111,11 +112,16 @@ if __name__ == '__main__':
     #tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.FATAL)
 
     parser = ArgumentParser()
-    # parser.add_argument(
-    #     '--dataset',
-    #     default=DATA_SET,
-    #     help="Dataset: currenty pt_to_en or abstract (default: {})".format(DATA_SET)
-    # )
+    parser.add_argument(
+        '--resource',
+        default=RESOURCE,
+        help=f"The tensorflow-datasets resource name (default: {RESOURCE})"
+    )
+    parser.add_argument(
+        '--dataset',
+        default=DATASET,
+        help=f"The name for the dataset with in the chosen resource (default: {DATASET})"
+    )
     parser.add_argument(
         '--mode',
         default=DEFAULT_MODE,
@@ -200,8 +206,8 @@ if __name__ == '__main__':
     max_len_input = flags.max_len_input if flags.max_len_input is not None else flags.max_len
     max_len_target = flags.max_len_target if flags.max_len_target is not None else flags.max_len
 
-    examples, metadata = tfds.load('ted_hrlr_translate/pt_to_en', with_info=True,
-                                   as_supervised=True)
+    examples, metadata = tfds.load(f'{flags.resource}/{flags.dataset}',
+                                   with_info=True, as_supervised=True)
     keys = metadata.supervised_keys
     train_examples, eval_examples = examples['train'], examples['validation']
 
