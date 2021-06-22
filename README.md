@@ -2,14 +2,14 @@
 
 We searched through numerous tutorials including the [official 
 TensorFlow transformer tutorial](https://www.tensorflow.org/tutorials/text/transformer "Transformer model for language understanding"),
-but none of them used the high-level API which includes built-in methods for 
+but none of them used the high-level Keras API which includes built-in methods for 
 training and evaluation. Since this posed difficulties
 when trying out our own customizations, we decided to implement the transformer 
 from scratch following the guidelines on standardizing on Keras for on the 
 high-level APIs in TensorFlow 2.0.
 
-The document transformer.pdf gives a detailed explanation of the both the implementation
-and the our own explanation of the transformer model.
+The document transformer.pdf gives a detailed explanation of the implementation
+as well as our own in-depth description of the transformer model.
 
 This README just demonstrates how to use the code.
 
@@ -101,7 +101,7 @@ Ground truth: so i \'ll just share with you some stories very quickly of some ma
 BLEU = 17.04 70.0/36.8/11.1/2.9 (BP = 1.000 ratio = 1.000 hyp_len = 20 ref_len = 20)
 ```
 
-The training output shows that the best validation loss occured at epoch 16.
+The training output shows that the best validation loss occurred at epoch 16.
 The `--checkpoint` (or `-c`) flag can be used to select this checkpoint:
 
 ```bash
@@ -127,7 +127,7 @@ BLEU = 31.04 75.0/47.4/22.2/11.8 (BP = 1.000 ratio = 1.053 hyp_len = 20 ref_len 
 Indeed it does much better on the last difficult sentence. 
 
 There is also the `evaluation` mode to calculate the corpus level BLEU 
-score. This take some time as auto-regressive inference is relatively slow:
+score. This takes some time as auto-regressive inference is relatively slow:
 
 ```bash
 $ python -m program --mode evaluate -c 16
@@ -136,7 +136,7 @@ Loading checkpoint train/checkpoint.16.ckpt
 BLEU = 27.76 59.8/34.1/21.4/13.6 (BP = 1.000 ratio = 1.015 hyp_len = 15804 ref_len = 15563)
 ```
 
-The `--resource` and `--dataset` flags are used to select a datatset from the
+The `--resource` and `--dataset` flags are used to select a dataset from the
 `tensorflow-datasets` library. Next we train the transformer on the German to 
 English dataset in the `wmt_t2t_translate` resource.  This time we allow both
 input and target sequences up to 60 tokens in length using the `--max-len` 
@@ -144,7 +144,7 @@ argument. It is important to `--clear` out the training checkpoints from the pre
 model.
 
 ```bash
-$ $ python -m program --resource wmt_t2t_translate --dataset de-en --epochs 20 --max-len 60 --clear
+$ python -m program --resource wmt_t2t_translate --dataset de-en --epochs 10 --max-len 60 --clear
 Downloading and preparing dataset 1.61 GiB (download: 1.61 GiB, generated: Unknown size, total: 1.61 GiB) to /home/rstudio/tensorflow_datasets/wmt_t2t_translate/de-en/1.0.0...               
 Extraction completed...: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 4/4 [1:01:21<00:00, 920.44s/ file]
 Dl Size...: 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 1645/1645 [1:01:21<00:00,  2.24s/ MiB]
@@ -155,5 +155,87 @@ Creating tokenizers. Please be patient...
 Creating tokenizers took 1578.562916 seconds.
 Number of input tokens: 7861
 Number of target tokens: 7985
+No model has been trained yet.                                                                                                                                                                
+Epoch 1/10                                                                                                                                                                                    
+2686/2686 [==============================] - 236s 82ms/step - loss: 5.8810 - accuracy: 0.1676 - val_loss: 5.0164 - val_accuracy: 0.2178                                                       
+Epoch 2/10                                                                                                                                                                                    
+2686/2686 [==============================] - 224s 82ms/step - loss: 4.4499 - accuracy: 0.2751 - val_loss: 4.1136 - val_accuracy: 0.3093                                                       
+...
+Epoch 8/10                                                                                                                                                                                    
+2686/2686 [==============================] - 224s 82ms/step - loss: 2.8028 - accuracy: 0.4847 - val_loss: 2.7983 - val_accuracy: 0.4902                                                       
+Epoch 9/10                                                                                                                                                                                    
+2686/2686 [==============================] - 224s 82ms/step - loss: 2.7486 - accuracy: 0.4921 - val_loss: 2.7605 - val_accuracy: 0.4933                                                       
+Epoch 10/10                                                                                                                                                                                   
+2686/2686 [==============================] - 223s 82ms/step - loss: 2.7038 - accuracy: 0.4983 - val_loss: 2.7299 - val_accuracy: 0.5022
+```
+As there is no sign over overfitting, we continue the training where we left 
+off for 10 more epochs (being careful not to use `--clear`). 
 
+```bash
+$ python -m program --resource wmt_t2t_translate --dataset de-en --epochs 10 --max-len 60
+Loading checkpoint train/checkpoint.10.ckpt
+Epoch 1/10
+2686/2686 [==============================] - 236s 83ms/step - loss: 2.6670 - accuracy: 0.5032 - val_loss: 2.7077 - val_accuracy: 0.5055
+Epoch 2/10
+2686/2686 [==============================] - 223s 81ms/step - loss: 2.6351 - accuracy: 0.5077 - val_loss: 2.6863 - val_accuracy: 0.5080
+...
+Epoch 9/10
+2686/2686 [==============================] - 224s 82ms/step - loss: 2.4970 - accuracy: 0.5272 - val_loss: 2.5956 - val_accuracy: 0.5223
+Epoch 10/10
+2686/2686 [==============================] - 224s 82ms/step - loss: 2.4852 - accuracy: 0.5291 - val_loss: 2.5941 - val_accuracy: 0.5231
+```
+
+If `--show-bleu` is specified in `evaluation` mode, then the program iterates
+through the validation set, making a prediction for each example and then
+computing its BLEU score.
+
+```bash
+$ python -m program --resource wmt_t2t_translate --dataset de-en --max-len 60 --mode evaluate --show-bleu
+oading checkpoint train/checkpoint.10.ckpt                                                                                                                                                   
+                                                                                                                                                                                              
+Input: Dies führt dazu, dass ein Spieler wie ich, die Stirn bieten muss und sein Bestes geben will.                                                                                           
+Prediction: this leads to a player like i want to offer and give his best .                                                                                                                   
+Ground truth: b'Which is what makes a player like me want to face up and give my best.'                                                                                                       
+BLEU = 14.09 52.9/31.2/6.7/3.6 (BP = 1.000 ratio = 1.133 hyp_len = 17 ref_len = 15)                                                                                                           
+
+Input: Wie sind Sie zu der Zusammenarbeit mit beiden gekommen?
+Prediction: how do you come to cooperation with both ?
+Ground truth: b'How did you end up working with them?'
+BLEU = 6.27 33.3/6.2/3.6/2.1 (BP = 1.000 ratio = 1.000 hyp_len = 9 ref_len = 9)
+
+Input: Nun sei die Zeit, das Volk an der Wahlurne entscheiden zu lassen, in welche Richtung das Land gehen solle.
+Prediction: now , the time is to make the people of choice of the electoralne , which the direction of the country is to go .
+Ground truth: b'Now is the time to let the population decide at the ballot box, in which direction the country should move forward.'
+BLEU = 5.62 52.2/9.1/2.4/1.2 (BP = 0.917 ratio = 0.920 hyp_len = 23 ref_len = 25)
+
+Input: Aber auch den vielen Wanderarbeitern, die das Virus durchs Land tragen.
+Prediction: but also the many hiking workers who contribute to the virus by the country .
+Ground truth: b'Another factor is the large number of migrant workers who carry the virus across the country.'
+BLEU = 12.94 47.1/25.0/6.7/3.6 (BP = 1.000 ratio = 1.133 hyp_len = 17 ref_len = 15)
+
+Input: Dieses Geschäftsfeld hat der Konzern längst aufgegeben, trotzdem konnte er die Registrierung abwenden.
+Prediction: this business field has been launched , yet it could depart the registration .
+Ground truth: b'This is a business sector that the group had long vacated, yet nonetheless managed to prevent the registration.'
+BLEU = 9.38 30.0/15.8/5.6/2.9 (BP = 1.000 ratio = 1.429 hyp_len = 20 ref_len = 14)
+
+Input: "Wenn er das Referendum ausruft, werden wir zu seinem Palast gehen und ihn stürzen", sagte der Oppositionelle Jasser Said.
+Prediction: " if he examines the referendum , we will go to his palace and remember him , the opposition jacse said .
+Ground truth: b'"If he calls for the referendum, we will go to his palace and overthrow him," said member of the opposition Jasser Said.'
+BLEU = 40.28 66.7/42.3/32.0/29.2 (BP = 1.000 ratio = 1.227 hyp_len = 27 ref_len = 22)
+
+Input: Bei zukünftigen diplomatischen Verhandlungen könnte sich die Hamas als Akteur erweisen, der selbst von Israel und den Vereinigten Staaten nicht herausgedrängt werden kann.
+Prediction: in future diplomatic negotiations , hamas may prove to be a player who can not be repressed by israel and the united states .
+Ground truth: b'In future diplomacy Hamas may emerge as an actor that cannot be shut out even by Israel and America.'
+BLEU = 2.45 30.0/2.6/1.4/0.7 (BP = 0.819 ratio = 0.833 hyp_len = 20 ref_len = 24)
+
+Input: Wir haben mit 79 Punkten abgeschlossen.
+Prediction: we have completed 79 points .
+Ground truth: b'We finished with 79 points.'
+BLEU = 30.21 50.0/40.0/25.0/16.7 (BP = 1.000 ratio = 1.000 hyp_len = 6 ref_len = 6)
+
+Input: Befahrbar sind gleichfalls alle Verkehrswege der zweiten und dritten Straßenklasse, einschließlich der Bergstraßen.
+Prediction: the road traffic routes of the second and third roads , including the mountain roads .
+Ground truth: b'All secondary and tertiary roads are also passable, including mountain roads.'
+BLEU = 12.49 53.8/25.0/9.1/5.0 (BP = 0.794 ratio = 0.812 hyp_len = 13 ref_len = 16)
+...
 ```
