@@ -29,6 +29,8 @@ from prepare_tokenizers import prepare_tokenizers
 RESOURCE = 'ted_hrlr_translate'
 DATASET = 'pt_to_en'
 TRAIN_DIR = 'train'
+# Maximum # of train examples.
+MAX_TRAIN_DATA_SIZE = 200000
 TOKENIZER_DIR = TRAIN_DIR
 DEFAULT_MODE = 'train'
 EPOCHS = 10
@@ -212,7 +214,7 @@ if __name__ == '__main__':
     train_examples, eval_examples = examples['train'], examples['validation']
 
     tokenizers, new_toks = prepare_tokenizers(
-        train_examples,
+        train_examples.take(MAX_TRAIN_DATA_SIZE),
         lower_case=True,
         input_vocab_size=2 ** 13,
         target_vocab_size=2 ** 13,
