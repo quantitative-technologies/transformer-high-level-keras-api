@@ -1,14 +1,17 @@
 # Transformer Implementation with the High-Level Keras API
 
-We searched through numerous tutorials including the official TensorFlow tutorial ... 
-but none of them followed the Keras implementation guidelines. Since this posed difficulties
-when trying out our own customizations, we decided to implement from scratch following
-the guidelines (to our best understanding).
+We searched through numerous tutorials including the [official 
+TensorFlow transformer tutorial](https://www.tensorflow.org/tutorials/text/transformer "Transformer model for language understanding"),
+but none of them used the high-level API which includes built-in methods for 
+training and evaluation. Since this posed difficulties
+when trying out our own customizations, we decided to implement the transformer 
+from scratch following the guidelines on standardizing on Keras for on the 
+high-level APIs in TensorFlow 2.0.
 
 The document transformer.pdf gives a detailed explanation of the both the implementation
 and the our own explanation of the transformer model.
 
-This README just describes how to use the code.
+This README just demonstrates how to use the code.
 
 ```bash
 $ python -m program --help
