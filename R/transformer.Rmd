@@ -750,10 +750,44 @@ model.fit(data_train, epochs=1, validation_data=data_eval,
 
 ## Inference
 
-Inference with the transformer, or any auto-regressive model, is not simply a matter of plugging a testing pipeline into the model and calling `predict`. The training process uses teacher forcing as previously discussed, which means the next symbol is predicted based on the given ground truth up to that point in the sequence. In contrast, during inference the sequence of predicted symbols is used to recursively predict the next symbol. 
+Inference with the transformer, or any auto-regressive model, is not simply a matter of plugging a testing pipeline into the model and calling `predict`. The training process uses teacher forcing as previously discussed, which means the next symbol is predicted based on the given ground truth up to that point in the sequence. In contrast, during inference the sequence of predicted symbols is used to recursively predict the next symbol. The code for doing this is in `transformer/autoregression.py`:
 
 ```{python inference}
+def autoregress(model, input, delimiters, max_length):
+    delimiters = delimiters[0]
+    decoder_input = [delimiters[0]]
+        
+    output = tf.expand_dims(decoder_input, 0)
 
+    done = False
+    while not done:
+        preds = model({'encoder_input': tf.expand_dims(input, 0), 'decoder_input': output})
+        prediction = preds[:, -1, :]
+        pred_id = tf.argmax(prediction, axis=-1) \
+            if tf.shape(output)[1] < max_length - 1 else tf.expand_dims(delimiters[1], 0)
+
+        done = pred_id == delimiters[1]
+        output = tf.concat([output, tf.expand_dims(pred_id, 0)], axis=-1)
+
+    return tf.squeeze(output, axis=0)
+
+
+def translate(model, input, tokenizers, max_length):
+    """
+    Translate an input sentence to a target sentence using a model
+    """
+    input_encoded = tokenizers.inputs.tokenize([input])[0]
+
+    if len(input_encoded) > max_length:
+        return None
+
+    prediction = autoregress(model, 
+                             input_encoded, 
+                             delimiters=tokenizers.targets.tokenize(['']),
+                             max_length=max_length)
+    prediction_decoded = tokenizers.targets.detokenize([prediction]).numpy()[0][0].decode('utf-8')
+
+    return prediction_decoded
 ```
 
 
