@@ -23,7 +23,6 @@ from transformer.transformer import transformer
 from transformer.loss import MaskedSparseCategoricalCrossentropy
 from transformer.autoregression import autoregress, translate, evaluate_single
 from transformer.schedule import CustomSchedule
-from transformer.metrics import SequenceAccuracy, accuracy_function, correct_accuracy, bleu_scores
 from prepare_tokenizers import prepare_tokenizers
 
 base_dir = os.getcwd()
