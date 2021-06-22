@@ -137,15 +137,20 @@ The `--resource` and `--dataset` flags are used to select a datatset from the
 `tensorflow-datasets` library. Next we train the transformer on the German to 
 English dataset in the `wmt_t2t_translate` resource.  This time we allow both
 input and target sequences up to 60 tokens in length using the `--max-len` 
-argument. It is important to `--clear` out the checkpoints from the previous 
+argument. It is important to `--clear` out the training checkpoints from the previous 
 model.
 
 ```bash
-$ python -m program --dataset tr_to_en --epochs 20 --max-len 60 --clear
+$ $ python -m program --resource wmt_t2t_translate --dataset de-en --epochs 20 --max-len 60 --clear
 Downloading and preparing dataset 1.61 GiB (download: 1.61 GiB, generated: Unknown size, total: 1.61 GiB) to /home/rstudio/tensorflow_datasets/wmt_t2t_translate/de-en/1.0.0...               
 Extraction completed...: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 4/4 [1:01:21<00:00, 920.44s/ file]
 Dl Size...: 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 1645/1645 [1:01:21<00:00,  2.24s/ MiB]
 Dl Completed...: 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 4/4 [1:01:21<00:00, 920.44s/ url]
 Extraction completed...: 0 file [00:00, ? file/s]
+Dataset wmt_t2t_translate downloaded and prepared to /home/rstudio/tensorflow_datasets/wmt_t2t_translate/de-en/1.0.0. Subsequent calls will reuse this data.                                  
+Creating tokenizers. Please be patient...
+Creating tokenizers took 1578.562916 seconds.
+Number of input tokens: 7861
+Number of target tokens: 7985
 
 ```
