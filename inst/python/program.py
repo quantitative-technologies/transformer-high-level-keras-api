@@ -14,9 +14,7 @@ import tensorflow as tf
 from tensorflow.keras.optimizers import Adam
 import tensorflow_datasets as tfds
 
-#import tensorflow_text
 from argparse import ArgumentParser
-from pytictoc import TicToc
 
 from transformer.dataset import Dataset
 from transformer.transformer import transformer
@@ -25,7 +23,6 @@ from transformer.autoregression import autoregress, translate
 from transformer.schedule import CustomSchedule
 from prepare_tokenizers import prepare_tokenizers
 
-#base_dir = os.getcwd()
 RESOURCE = 'ted_hrlr_translate'
 DATASET = 'pt_to_en'
 TRAIN_DIR = 'train'
@@ -109,9 +106,6 @@ def get_compiled_model(num_layers, d_model, num_heads, dff, input_vocab_size,
 
 if __name__ == '__main__':
     logging.getLogger('tensorflow').setLevel(logging.ERROR)  # suppress warnings
-    # Set tensorflow logging level (no warnings)
-    #tf.get_logger().setLevel('ERROR')
-    #tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.FATAL)
 
     parser = ArgumentParser()
     parser.add_argument(
@@ -293,7 +287,7 @@ if __name__ == '__main__':
 
         for example in data['examples']:
             translation = translate(transformer_model, example['input'], tokenizers, MAX_LEN)
-            print(f"\nInput: {example['input']}")
+            print(f"\nInput: {example['input'].decode('utf-8')}")
             print(f"Prediction: {translation}")
             print(f"Ground truth: {example['target']}")
             if flags.show_bleu:
