@@ -101,7 +101,7 @@ Ground truth: so i \'ll just share with you some stories very quickly of some ma
 BLEU = 17.04 70.0/36.8/11.1/2.9 (BP = 1.000 ratio = 1.000 hyp_len = 20 ref_len = 20)
 ```
 
-The training output shows that the best validation loss occured at epoch 16.
+The training output shows that the best validation loss occurred at epoch 16.
 The `--checkpoint` (or `-c`) flag can be used to select this checkpoint:
 
 ```bash
@@ -136,7 +136,7 @@ Loading checkpoint train/checkpoint.16.ckpt
 BLEU = 27.76 59.8/34.1/21.4/13.6 (BP = 1.000 ratio = 1.015 hyp_len = 15804 ref_len = 15563)
 ```
 
-The `--resource` and `--dataset` flags are used to select a datatset from the
+The `--resource` and `--dataset` flags are used to select a dataset from the
 `tensorflow-datasets` library. Next we train the transformer on the German to 
 English dataset in the `wmt_t2t_translate` resource.  This time we allow both
 input and target sequences up to 60 tokens in length using the `--max-len` 
