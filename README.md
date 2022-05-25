@@ -191,7 +191,7 @@ computing its BLEU score.
 
 ```bash
 $ python -m program --resource wmt_t2t_translate --dataset de-en --max-len 60 --mode evaluate --show-bleu
-oading checkpoint train/checkpoint.10.ckpt                                                                                                                                                   
+Loading checkpoint train/checkpoint.10.ckpt                                                                                                                                                   
                                                                                                                                                                                               
 Input: Dies führt dazu, dass ein Spieler wie ich, die Stirn bieten muss und sein Bestes geben will.                                                                                           
 Prediction: this leads to a player like i want to offer and give his best .                                                                                                                   
