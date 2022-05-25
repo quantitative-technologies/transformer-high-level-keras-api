@@ -1,0 +1,61 @@
+# Transformer Implementation {#implementation}
+
+There are a numerous blogs/tutorials demonstrating transformer implementations in TensorFlow from scratch, including the [official 
+TensorFlow transformer tutorial](https://www.tensorflow.org/tutorials/text/transformer "Transformer model for language understanding").
+However, we could not find a single example using the high-level Keras API for building and training the transformer. For example, the official tutorial does not use Keras' built-in APIs for training and validation.
+This created difficulties for us when we attempted to build a customized transformer based on existing examples.
+
+The purpose of this article is to present a TensorFlow implementation of the transformer sequence-to-sequence architecture @attention in Keras following the high-level API specifications. We use TensorFlow's built in implementation of the Keras API (see e.g. [Guidance on High-level APIs in TensorFlow 2.0](https://blog.tensorflow.org/2018/12/standardizing-on-keras-guidance.html "Standardizing on Keras: Guidance on High-level APIs in TensorFlow 2.0")).
+Using a high-level API makes the learning process more straightforward and the code much briefer. It also avoids reinventing the wheel which can potentially introduce errors. 
+
+While the primary emphasis is on implementation, we also give our own in depth explanation of the transformer model. 
+
+## Requirements
+
+This library requires TensorFlow version 2.5.0. It *may* work on newer versions as well, and we have tested it on the version 2.6 development branch. The full requirements are listed in `inst/python/requirements.txt`. 
+
+Please note the root directory for the actual `python` code is `inst/python`. 
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+python_working_dir <- here::here('inst/python')
+knitr::opts_knit$set(root.dir = python_working_dir)
+#knitr::opts_chunk$set(tidy.opts=list(width.cutoff=50), tidy=TRUE)
+knitr::opts_knit$set(width = 80)
+library(reticulate)
+#use_virtualenv('abstract-2.5')
+use_python('/usr/bin/python')
+py_config()
+```
+
+```{r formatting-setup,echo=FALSE,message=FALSE,warning=FALSE}
+# Set so that long lines in R will be wrapped:
+#knitr::opts_chunk$set(tidy.opts=list(width.cutoff=50), tidy=TRUE)
+```
+
+```{r test, root.dir=python_working_dir, include=FALSE}
+os <- import('os')
+os$getcwd()
+```
+
+# Introduction {#intro}
+
+You can label chapter and section titles using `{#label}` after them, e.g., we can reference Chapter \@ref(intro). If you do not manually label them, there will be automatic labels anyway, e.g., Chapter \@ref(methods).
+
+Figures and tables with captions will be placed in `figure` and `table` environments, respectively.
+
+```{r nice-fig, fig.cap='Here is a nice figure!', out.width='80%', fig.asp=.75, fig.align='center'}
+par(mar = c(4, 4, .1, .1))
+plot(pressure, type = 'b', pch = 19)
+```
+
+Reference a figure by its code chunk label with the `fig:` prefix, e.g., see Figure \@ref(fig:nice-fig). Similarly, you can reference tables generated from `knitr::kable()`, e.g., see Table \@ref(tab:nice-tab).
+
+```{r nice-tab, tidy=FALSE}
+knitr::kable(
+  head(iris, 20), caption = 'Here is a nice table!',
+  booktabs = TRUE
+)
+```
+
+You can write citations, too. For example, we are using the **bookdown** package [@R-bookdown] in this sample book, which was built on top of R Markdown and **knitr** [@xie2015].
