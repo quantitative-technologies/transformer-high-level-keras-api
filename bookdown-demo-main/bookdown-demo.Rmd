@@ -62,8 +62,8 @@ knitr::opts_knit$set(root.dir = python_working_dir)
 #knitr::opts_chunk$set(tidy.opts=list(width.cutoff=50), tidy=TRUE)
 knitr::opts_knit$set(width = 80)
 library(reticulate)
-#use_virtualenv('abstract-2.5')
-use_python('/usr/bin/python')
+use_virtualenv('transformers')
+#use_python('/usr/bin/python')
 py_config()
 ```
 
