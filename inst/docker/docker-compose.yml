@@ -1,0 +1,30 @@
+version: "3"
+
+services:
+  r-server-1:
+    image: rocker/ml
+    container_name: r-server-1
+    ports:
+      - "8787:8787"
+    volumes:
+      - /home/james_hirschorn/projects:/home/rstudio/projects
+    environment:
+      - PASSWORD=23l:"/F`)xd9)o`209,t
+  r-server-2:
+    image: rserver
+    container_name: r-server-2
+    ports:
+      - "8788:8787"
+      - "54321:54321"
+    volumes:
+      - /home/james_hirschorn/projects:/home/rstudio/projects
+    environment:
+      - PASSWORD=23l:"/F`)xd9)o`209,t
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
