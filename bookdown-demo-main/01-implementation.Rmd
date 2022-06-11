@@ -1,3 +1,4 @@
+
 # Transformer Implementation {#implementation}
 
 There are a numerous blogs/tutorials demonstrating transformer implementations in TensorFlow from scratch, including the [official 

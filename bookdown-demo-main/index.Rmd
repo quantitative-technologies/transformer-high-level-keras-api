@@ -1,4 +1,4 @@
---- 
+---
 title: "Transformer Implementation with the High-Level Keras API"
 author: "James Hirschorn"
 date: "June 22, 2021"
