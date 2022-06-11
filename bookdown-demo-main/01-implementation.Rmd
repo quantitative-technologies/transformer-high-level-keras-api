@@ -20,7 +20,7 @@ Please note the root directory for the actual `python` code is `inst/python`.
 ```{r setup, include=FALSE, eval=TRUE}
 knitr::opts_chunk$set(echo = TRUE)
 # FIX THIS!!!
-python_working_dir <- here::here('../inst/python')
+python_working_dir <- here::here('inst/python')
 knitr::opts_knit$set(root.dir = python_working_dir)
 knitr::opts_knit$set(width = 80)
 library(reticulate)
@@ -28,7 +28,7 @@ PATH_v <- Sys.getenv('PATH')
 HOME_v <- Sys.getenv('HOME')
 Sys.setenv(PATH = paste(PATH_v, paste(HOME_v, '.local/bin', sep = '/'), sep = ':'))
 system("pip install pipenv")
-system("pipenv --python 3.8")
+system("pipenv --python 3.9")
 venv <- system("pipenv --venv", inter = TRUE)
 use_virtualenv(venv, required = TRUE)
 py_config()
