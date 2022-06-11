@@ -24,7 +24,7 @@ knitr::opts_knit$set(root.dir = python_working_dir)
 knitr::opts_knit$set(width = 80)
 library(reticulate)
 #use_virtualenv('abstract-2.5')
-use_python('/usr/bin/python')
+use_python('/usr/bin/python3')
 py_config()
 ```
 
