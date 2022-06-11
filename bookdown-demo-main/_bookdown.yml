@@ -1,4 +1,3 @@
-book_filename: "bookdown-demo"
 language:
   ui:
     chapter_name: "Chapter "
@@ -7,9 +6,13 @@ delete_merged_file: true
 rmd_files: [
   'index.Rmd',
   '01-implementation.Rmd',
-  '02-literature.Rmd',
-  '03-method.Rmd',
-  '04-application.Rmd',
-  '05-summary.Rmd',
+  #'01-intro.Rmd',
+  '02-data.Rmd',
+  #'02-literature.Rmd',
+  #'03-method.Rmd',
+  '03-architecture.Rmd',
+  #'04-application.Rmd',
+  '04-model.Rmd',
+  #'05-summary.Rmd',
   '06-references.Rmd'
   ]

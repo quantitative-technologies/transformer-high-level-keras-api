@@ -46,8 +46,10 @@ knitr::opts_knit$set(root.dir = python_working_dir)
 #knitr::opts_chunk$set(tidy.opts=list(width.cutoff=50), tidy=TRUE)
 knitr::opts_knit$set(width = 80)
 library(reticulate)
-#use_virtualenv('abstract-2.5')
-use_python('/usr/bin/python')
+system("pipenv --python 3.8")
+venv <- system("pipenv --venv", inter = TRUE)
+use_virtualenv(venv, required = TRUE)
+system("pip install -r requirements.txt")
 py_config()
 ```
 

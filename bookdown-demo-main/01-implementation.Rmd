@@ -1,3 +1,4 @@
+
 # Transformer Implementation {#implementation}
 
 There are a numerous blogs/tutorials demonstrating transformer implementations in TensorFlow from scratch, including the [official 
@@ -16,46 +17,35 @@ This library requires TensorFlow version 2.5.0. It *may* work on newer versions 
 
 Please note the root directory for the actual `python` code is `inst/python`. 
 
-```{r setup, include=FALSE}
+```{r setup, include=FALSE, eval=TRUE}
 knitr::opts_chunk$set(echo = TRUE)
-python_working_dir <- here::here('inst/python')
+# FIX THIS!!!
+python_working_dir <- here::here('../inst/python')
 knitr::opts_knit$set(root.dir = python_working_dir)
-#knitr::opts_chunk$set(tidy.opts=list(width.cutoff=50), tidy=TRUE)
 knitr::opts_knit$set(width = 80)
 library(reticulate)
-#use_virtualenv('abstract-2.5')
-use_python('/usr/bin/python3')
+PATH_v <- Sys.getenv('PATH')
+HOME_v <- Sys.getenv('HOME')
+Sys.setenv(PATH = paste(PATH_v, paste(HOME_v, '.local/bin', sep = '/'), sep = ':'))
+system("pip install pipenv")
+system("pipenv --python 3.8")
+venv <- system("pipenv --venv", inter = TRUE)
+use_virtualenv(venv, required = TRUE)
 py_config()
 ```
 
-```{r formatting-setup,echo=FALSE,message=FALSE,warning=FALSE}
+```{python requirements, include=FALSE}
+import os
+
+os.system("pip install -r requirements.txt")
+```
+
+```{r formatting-setup,echo=FALSE,message=FALSE,warning=FALSE,eval=FALSE}
 # Set so that long lines in R will be wrapped:
 #knitr::opts_chunk$set(tidy.opts=list(width.cutoff=50), tidy=TRUE)
 ```
 
 ```{r test, root.dir=python_working_dir, include=FALSE}
-os <- import('os')
-os$getcwd()
+#os <- import('os')
+#os$getcwd()
 ```
-
-# Introduction {#intro}
-
-You can label chapter and section titles using `{#label}` after them, e.g., we can reference Chapter \@ref(intro). If you do not manually label them, there will be automatic labels anyway, e.g., Chapter \@ref(methods).
-
-Figures and tables with captions will be placed in `figure` and `table` environments, respectively.
-
-```{r nice-fig, fig.cap='Here is a nice figure!', out.width='80%', fig.asp=.75, fig.align='center'}
-par(mar = c(4, 4, .1, .1))
-plot(pressure, type = 'b', pch = 19)
-```
-
-Reference a figure by its code chunk label with the `fig:` prefix, e.g., see Figure \@ref(fig:nice-fig). Similarly, you can reference tables generated from `knitr::kable()`, e.g., see Table \@ref(tab:nice-tab).
-
-```{r nice-tab, tidy=FALSE}
-knitr::kable(
-  head(iris, 20), caption = 'Here is a nice table!',
-  booktabs = TRUE
-)
-```
-
-You can write citations, too. For example, we are using the **bookdown** package [@R-bookdown] in this sample book, which was built on top of R Markdown and **knitr** [@xie2015].
