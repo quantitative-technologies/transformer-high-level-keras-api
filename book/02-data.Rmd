@@ -1,0 +1,157 @@
+# Data {#data}
+
+All of the data is obtained from the [`tensorflow_datasets`](https://www.tensorflow.org/datasets "TensorFlow Datasets: a collection of ready-to-use datasets") library. We begin with the [`ted_hrlr_translate`](https://www.tensorflow.org/datasets/catalog/ted_hrlr_translate "Data sets derived from TED talk transcripts for comparing similar language pairs where one is high resource and the other is low resource") resource and the Portuguese to English language pair.
+```{python load-data}
+import tensorflow_datasets as tfds
+
+resource = 'ted_hrlr_translate'
+pair = 'pt_to_en'
+examples, metadata = tfds.load(f'{resource}/{pair}', with_info=True,
+                               as_supervised=True)
+                               
+keys = metadata.supervised_keys
+train_examples, eval_examples = examples['train'], examples['validation']
+
+print(f'Keys: {metadata.supervised_keys}')
+```
+
+The individual examples have the following format:
+
+```{python show-data, results='hide'}
+example1 = next(iter(train_examples))
+print(example1)
+```
+
+```{python show-data-hidden, echo=FALSE}
+example1_output = f'{example1}'
+```
+
+```{r show-data-print, echo=FALSE}
+show_python_output <- function(py_output, width = 80) {
+  output <- paste(strwrap(py_output, 80), collapse = '\n')
+  cat(output)
+}
+show_python_output(py$example1_output)
+```
+## Tokenizers
+
+As usual for language modeling, sentences in some language must be converted to sequences of integers in order to serve as input for a neural network, in a process called *tokenization*.
+The input sentences are tokenized using the class `SubwordTokenizer` in the script `tokenizer/subword_tokenizer.py`. It is closely based on the `CustomTokenizer` class from the [Subword tokenizer tutorial](https://www.tensorflow.org/text/guide/subwords_tokenizer "Subword tokenizers") which is in turn based on the `BertTokenizer` from `tensorflow_text`. 
+
+The script `prepare_tokenizers.py` provides the `prepare_tokenizers` function which builds a pair of `SubwordTokenizer`s from the input examples and saves them to disk for later reuse, as they take some time to build. The parameters below indicate that all text is converted to lowercase and that the maximum vocabulary size of both the inputs and targets is $2^{13} = `r 2 ** 13`$.
+
+```{python create-tokenizers}
+from prepare_tokenizers import prepare_tokenizers
+
+TRAIN_DIR = 'train'
+
+tokenizers, _ = prepare_tokenizers(train_examples,
+                                   lower_case=True,
+                                   input_vocab_size=2 ** 13,
+                                   target_vocab_size=2 ** 13,
+                                   name=metadata.name + '-' + keys[0] + '_to_' + keys[1],
+                                   tokenizer_dir=TRAIN_DIR,
+                                   reuse=True)
+                                
+input_vocab_size = tokenizers.inputs.get_vocab_size()
+target_vocab_size = tokenizers.targets.get_vocab_size()
+print("Number of input tokens: {}".format(input_vocab_size))
+print("Number of target tokens: {}".format(target_vocab_size))
+```
+
+The tokenizer is demonstrated on the the English sentence from example 1 above. 
+
+```{python tokenizer-example-1, results='hide'}
+example1_en_string = example1[1].numpy().decode('utf-8')
+tokenizer = tokenizers.targets
+print(f'Sentence: {example1_en_string}')
+```
+
+```{python tokenizer-example-hidden-1, echo=FALSE}
+sent = f'Sentence: {example1_en_string}'
+```
+
+```{r tokenizer-example-show-1, echo=FALSE}
+show_python_output(py$sent)
+```
+
+```{python tokenizer-example-2, results='hide'}
+tokens = tokenizer.tokenize([example1_en_string])
+print(f'Tokenized sentence: {tokens}')
+```
+
+```{python tokenizer-example-hidden-2, echo=FALSE}
+tokens_str = f'Tokenized sentence: {tokens}'
+```
+
+```{r tokenizer-example-show-2, echo=FALSE}
+show_python_output(py$tokens_str)
+```
+
+```{python tokenizer-example-3, results='hide'}
+text_tokens = tokenizer.lookup(tokens)
+print(f'Text tokens: {text_tokens}')
+```
+
+```{python tokenizer-example-hidden-3, echo=FALSE}
+text_tokens_str = f'Text tokens: {text_tokens}'
+```
+
+```{r tokenizer-example-show-3, echo=FALSE}
+show_python_output(py$text_tokens_str)
+```
+
+```{python tokenizer-example-4, results='hide'}
+round_trip = tokenizer.detokenize(tokens)
+print(f"Convert tokens back to original sentence: " \
+      f"{round_trip.numpy()[0][0].decode('utf-8')}")
+```
+
+```{python tokenizer-example-hidden-4, echo=FALSE}
+round_trip_str = f"Convert tokens back to original sentence: " \
+                 f"{round_trip.numpy()[0][0].decode('utf-8')}"
+```
+
+```{r tokenizer-example-show-4, echo=FALSE}
+show_python_output(py$round_trip_str)
+```
+
+The `tokenize` method converts a sentence (or any block of text) into a sequence of tokens (i.e. integers). 
+The `SubwordTokenizer` methods are intended for lists of sentences, corresponding to the batched inputs fed to the neural network, while in this example we use a batch of size one. 
+The `lookup` method shows which subword each input token represents.
+Note that the tokenizer has added special start and end tokens accordingly to the tokenized sequence, which allows the model to understand about the start and end of each input. 
+`detokenize` maps the tokens back to the original sentence. 
+
+## Data Pipeline
+
+The [`tf.data.Dataset`](https://www.tensorflow.org/api_docs/python/tf/data/Dataset "tf.data.Dataset") API is used for the input pipeline, suitable for consumption by `TensorFlow`/`Keras` models. Since our data comes from `tensorflow_datasets` it is already a `tf.data` object to which we can apply the necessary transformations and then iterate as batches. 
+
+Our input pipeline tokenizes the sentences from both languages into sequences of integers, discards any examples where either the source or target has more than `MAX_LEN` tokens and collects them into batches of size `BATCH_SIZE`. The reason for limiting the length of the input sequences is that both the transformer run time and memory usage are quadratic in the input length, which is evident from the attention mechanism shown in equation \@ref(eq:attention) below. 
+
+The result is a `tf.data` dataset which return a tuple of `(inputs, targets)` for each batch. As is typical for Encoder--Decoder auto-regressive sequence-to-sequence architectures, the input is of the form `(encoder_inpout, decoder_input)` where `encoder_input` is the tokenized source sentence and `decoder_input` is tokenized target sentence with the last token dropped; 
+while `targets` is the tokenized target sentence lagged by one for autoregression. 
+
+The input pipeline encapsulated in our `Dataset` class follows the [TensorFlow Data Pipeline Performance Guide](https://www.tensorflow.org/guide/data_performance "Better performance with the tf.data API"):
+
+**`transformer/dataset.py`**
+```{python dataset.py, code=readLines(file.path(python_working_dir, 'transformer', 'dataset.py')), cache=TRUE}
+```
+
+We extract the first batch from the data pipeline:
+
+```{python create-data-pipeline}
+import tensorflow as tf
+from transformer.dataset import Dataset
+
+BATCH_SIZE = 64
+MAX_LEN = 40
+
+dataset = Dataset(tokenizers, batch_size=BATCH_SIZE, 
+                  input_seqlen=MAX_LEN, target_seqlen=MAX_LEN)
+data_train = dataset.data_pipeline(train_examples, 
+                                   num_parallel_calls=tf.data.experimental.AUTOTUNE)    
+data_eval = dataset.data_pipeline(eval_examples, 
+                                  num_parallel_calls=tf.data.experimental.AUTOTUNE)                           
+batch1 = next(iter(data_train))
+print(batch1)
+```

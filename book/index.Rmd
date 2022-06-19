@@ -1,0 +1,21 @@
+---
+title: "Transformer Implementation with the High-Level Keras API"
+author: "James Hirschorn"
+date: "June 22, 2021"
+site: bookdown::bookdown_site
+output: bookdown::gitbook
+documentclass: book
+bibliography: bibliography.bib
+biblio-style: apalike
+link-citations: yes
+github-repo: rstudio/bookdown-demo
+description: "This is an transformer implementation from scratch using the Keras API."
+---
+
+\newcommand{\reals}{\mathbb R}
+\newcommand{\dmodel}{d_{\mathrm{model}}}
+\newcommand{\Th}{{^{\mathrm{th}}}}
+\newcommand{\espc}{\quad}
+\renewcommand{\div}{\mathbin{/}}
+
+<!-- # Prerequisites -->

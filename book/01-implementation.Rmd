@@ -1,0 +1,51 @@
+
+# Transformer Implementation {#implementation}
+
+There are a numerous blogs/tutorials demonstrating transformer implementations in TensorFlow from scratch, including the [official 
+TensorFlow transformer tutorial](https://www.tensorflow.org/tutorials/text/transformer "Transformer model for language understanding").
+However, we could not find a single example using the high-level Keras API for building and training the transformer. For example, the official tutorial does not use Keras' built-in APIs for training and validation.
+This created difficulties for us when we attempted to build a customized transformer based on existing examples.
+
+The purpose of this article is to present a TensorFlow implementation of the transformer sequence-to-sequence architecture @attention in Keras following the high-level API specifications. We use TensorFlow's built in implementation of the Keras API (see e.g. [Guidance on High-level APIs in TensorFlow 2.0](https://blog.tensorflow.org/2018/12/standardizing-on-keras-guidance.html "Standardizing on Keras: Guidance on High-level APIs in TensorFlow 2.0")).
+Using a high-level API makes the learning process more straightforward and the code much briefer. It also avoids reinventing the wheel which can potentially introduce errors. 
+
+While the primary emphasis is on implementation, we also give our own in depth explanation of the transformer model. 
+
+## Requirements
+
+This library requires TensorFlow version 2.5.0. It *may* work on newer versions as well, and we have tested it on the version 2.6 development branch. The full requirements are listed in `inst/python/requirements.txt`. 
+
+Please note the root directory for the actual `python` code is `inst/python`. 
+
+```{r setup, include=FALSE, eval=TRUE}
+knitr::opts_chunk$set(echo = TRUE)
+# FIX THIS!!!
+python_working_dir <- here::here('inst/python')
+knitr::opts_knit$set(root.dir = python_working_dir)
+knitr::opts_knit$set(width = 80)
+library(reticulate)
+PATH_v <- Sys.getenv('PATH')
+HOME_v <- Sys.getenv('HOME')
+Sys.setenv(PATH = paste(PATH_v, paste(HOME_v, '.local/bin', sep = '/'), sep = ':'))
+system("pip install pipenv")
+system("pipenv --python 3.9")
+venv <- system("pipenv --venv", inter = TRUE)
+use_virtualenv(venv, required = TRUE)
+py_config()
+```
+
+```{python requirements, include=FALSE}
+import os
+
+os.system("pip install -r requirements.txt")
+```
+
+```{r formatting-setup,echo=FALSE,message=FALSE,warning=FALSE,eval=FALSE}
+# Set so that long lines in R will be wrapped:
+#knitr::opts_chunk$set(tidy.opts=list(width.cutoff=50), tidy=TRUE)
+```
+
+```{r test, root.dir=python_working_dir, include=FALSE}
+#os <- import('os')
+#os$getcwd()
+```

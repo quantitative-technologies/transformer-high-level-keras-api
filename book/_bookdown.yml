@@ -1,0 +1,13 @@
+language:
+  ui:
+    chapter_name: "Chapter "
+delete_merged_file: true
+
+rmd_files: [
+  'index.Rmd',
+  '01-implementation.Rmd',
+  '02-data.Rmd',
+  '03-architecture.Rmd',
+  '04-model.Rmd',
+  '05-references.Rmd'
+  ]
