@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Chapter 3 Transformer Architecture | Transformer Implementation with the High-Level Keras API</title>
+  <meta name="description" content="This is an transformer implementation from scratch using the Keras API." />
+  <meta name="generator" content="bookdown 0.26 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Chapter 3 Transformer Architecture | Transformer Implementation with the High-Level Keras API" />
+  <meta property="og:type" content="book" />
+  
+  <meta property="og:description" content="This is an transformer implementation from scratch using the Keras API." />
+  <meta name="github-repo" content="rstudio/bookdown-demo" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Chapter 3 Transformer Architecture | Transformer Implementation with the High-Level Keras API" />
+  
+  <meta name="twitter:description" content="This is an transformer implementation from scratch using the Keras API." />
+  
+
+<meta name="author" content="James Hirschorn" />
+
+
+<meta name="date" content="2021-06-22" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="data.html"/>
+<link rel="next" href="model.html"/>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+
+
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<style type="text/css">
+/* Used with Pandoc 2.11+ new --citeproc when CSL is used */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}
+</style>
+
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li class="chapter" data-level="1" data-path="implementation.html"><a href="implementation.html"><i class="fa fa-check"></i><b>1</b> Transformer Implementation</a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="implementation.html"><a href="implementation.html#requirements"><i class="fa fa-check"></i><b>1.1</b> Requirements</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="data.html"><a href="data.html"><i class="fa fa-check"></i><b>2</b> Data</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="data.html"><a href="data.html#tokenizers"><i class="fa fa-check"></i><b>2.1</b> Tokenizers</a></li>
+<li class="chapter" data-level="2.2" data-path="data.html"><a href="data.html#data-pipeline"><i class="fa fa-check"></i><b>2.2</b> Data Pipeline</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="architecture.html"><a href="architecture.html"><i class="fa fa-check"></i><b>3</b> Transformer Architecture</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="architecture.html"><a href="architecture.html#embeddings"><i class="fa fa-check"></i><b>3.1</b> Embeddings</a></li>
+<li class="chapter" data-level="3.2" data-path="architecture.html"><a href="architecture.html#masking"><i class="fa fa-check"></i><b>3.2</b> Masking</a></li>
+<li class="chapter" data-level="3.3" data-path="architecture.html"><a href="architecture.html#positional-encodings"><i class="fa fa-check"></i><b>3.3</b> Positional Encodings</a></li>
+<li class="chapter" data-level="3.4" data-path="architecture.html"><a href="architecture.html#transformer-sublayers"><i class="fa fa-check"></i><b>3.4</b> Transformer Sublayers</a></li>
+<li class="chapter" data-level="3.5" data-path="architecture.html"><a href="architecture.html#attention"><i class="fa fa-check"></i><b>3.5</b> Attention</a>
+<ul>
+<li class="chapter" data-level="3.5.1" data-path="architecture.html"><a href="architecture.html#scaled-dot-product-attention"><i class="fa fa-check"></i><b>3.5.1</b> Scaled Dot-Product Attention</a></li>
+<li class="chapter" data-level="3.5.2" data-path="architecture.html"><a href="architecture.html#attention-layer"><i class="fa fa-check"></i><b>3.5.2</b> Attention Layer</a></li>
+</ul></li>
+<li class="chapter" data-level="3.6" data-path="architecture.html"><a href="architecture.html#feed-forward-networks"><i class="fa fa-check"></i><b>3.6</b> Feed-Forward Networks</a></li>
+<li class="chapter" data-level="3.7" data-path="architecture.html"><a href="architecture.html#encoder"><i class="fa fa-check"></i><b>3.7</b> Encoder</a>
+<ul>
+<li class="chapter" data-level="3.7.1" data-path="architecture.html"><a href="architecture.html#encoder-layer"><i class="fa fa-check"></i><b>3.7.1</b> Encoder Layer</a></li>
+</ul></li>
+<li class="chapter" data-level="3.8" data-path="architecture.html"><a href="architecture.html#decoder"><i class="fa fa-check"></i><b>3.8</b> Decoder</a>
+<ul>
+<li class="chapter" data-level="3.8.1" data-path="architecture.html"><a href="architecture.html#decoder-layer"><i class="fa fa-check"></i><b>3.8.1</b> Decoder Layer</a></li>
+</ul></li>
+<li class="chapter" data-level="3.9" data-path="architecture.html"><a href="architecture.html#transformer-model"><i class="fa fa-check"></i><b>3.9</b> Transformer Model</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="model.html"><a href="model.html"><i class="fa fa-check"></i><b>4</b> Model Usage</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="model.html"><a href="model.html#training"><i class="fa fa-check"></i><b>4.1</b> Training</a>
+<ul>
+<li class="chapter" data-level="4.1.1" data-path="model.html"><a href="model.html#loss"><i class="fa fa-check"></i><b>4.1.1</b> Loss</a></li>
+<li class="chapter" data-level="4.1.2" data-path="model.html"><a href="model.html#optimization"><i class="fa fa-check"></i><b>4.1.2</b> Optimization</a></li>
+<li class="chapter" data-level="4.1.3" data-path="model.html"><a href="model.html#learning"><i class="fa fa-check"></i><b>4.1.3</b> Learning</a></li>
+</ul></li>
+<li class="chapter" data-level="4.2" data-path="model.html"><a href="model.html#inference"><i class="fa fa-check"></i><b>4.2</b> Inference</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Transformer Implementation with the High-Level Keras API</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="architecture" class="section level1 hasAnchor" number="3">
+<h1><span class="header-section-number">Chapter 3</span> Transformer Architecture<a href="architecture.html#architecture" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p>The transformer has an encoder-decoder structure as is typical for neural sequence transduction models,
+e.g. language translation.
+The encoder encodes a sequence of tokens <span class="math inline">\((x_1,\dots,x_n)\)</span> from the first language to a continuous representation <span class="math inline">\(\mathbf z=(z_1,\dots,z_n)\)</span> in <span class="math inline">\(d_{\mathrm{model}}\)</span>-dimensional Euclidean space, i.e. each <span class="math inline">\(z_i\in\mathbb R^{d_{\mathrm{model}}}\)</span>. The decoder the maps this representation to a sequence of tokens <span class="math inline">\((y_1,\dots,y_m)\)</span> auto-regressively: each symbol <span class="math inline">\(y_j\)</span> is predicted from <span class="math inline">\(\mathbf z\)</span> and the previously predicted symbols <span class="math inline">\(y_1\dots,y_{j-1}\)</span>.</p>
+<p>In all of the code snippets below, the imports are not shown but are included in the following:</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb20-1"><a href="architecture.html#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> tensorflow <span class="im">as</span> tf</span>
+<span id="cb20-2"><a href="architecture.html#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> tensorflow.keras <span class="im">import</span> Sequential, Model</span>
+<span id="cb20-3"><a href="architecture.html#cb20-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> tensorflow.keras.layers <span class="im">import</span> Layer, Embedding, Dropout, LayerNormalization, Input</span></code></pre></div>
+<p>Filenames in this section are relative to the <code>transformer</code> subdirectory of the source code.</p>
+<div id="embeddings" class="section level2 hasAnchor" number="3.1">
+<h2><span class="header-section-number">3.1</span> Embeddings<a href="architecture.html#embeddings" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>The initial layer of the both the encoder and decoder map input and output symbols to <span class="math inline">\(d_{\mathrm{model}}\)</span>-dimensional space, respectively. This is the usual learned embedding, where for each symbol <span class="math inline">\(d_{\mathrm{model}}\)</span> weights are learned which map this symbol to <span class="math inline">\(d_{\mathrm{model}}\)</span>-space. These embeddings tend to have desirable properties which make them interesting in their own right. For example, when the symbols are tokens obtained from some language those with similar meanings have closer embeddings in <span class="math inline">\(d_{\mathrm{model}}\)</span>-space.</p>
+</div>
+<div id="masking" class="section level2 hasAnchor" number="3.2">
+<h2><span class="header-section-number">3.2</span> Masking<a href="architecture.html#masking" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>The Keras API has built in support for masking, which is used to ignore specified positions in sequential inputs. It is described for example in the <a href="https://www.tensorflow.org/tutorials/text/transformer" title="Masking and padding with Keras">TensorFlow Keras Guide on Masking and Padding</a>. Layers that utilize masking are either mask consumers or producers, where the latter can also modify an existing mask.
+In the transformer architecture the attention layers are the mask consumers.</p>
+<p>There are two uses for masking in the architecture. The first is the usual one for sequence models. The input sequences are padded at the end with zeros so that each batch has members of the same length. These are masked out so that, for example, the position pair <span class="math inline">\((i, j)\)</span> has zero attention weight whenever either the <span class="math inline">\(i{^{\mathrm{th}}}\)</span> or the <span class="math inline">\(j{^{\mathrm{th}}}\)</span> position of the input is padding. We define the <code>PaddingMask</code> layer to produce these masks. In the Embeddings section it is explained why we chose not to use the Keras built-in <code>Embedding</code> mask producing layer to produce these masks.</p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb21-1"><a href="architecture.html#cb21-1" aria-hidden="true" tabindex="-1"></a>_keras_mask_attr <span class="op">=</span> <span class="st">&#39;_keras_mask&#39;</span></span>
+<span id="cb21-2"><a href="architecture.html#cb21-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-3"><a href="architecture.html#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> PaddingMask(Layer):</span>
+<span id="cb21-4"><a href="architecture.html#cb21-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, mask_value<span class="op">=</span><span class="dv">0</span>):</span>
+<span id="cb21-5"><a href="architecture.html#cb21-5" aria-hidden="true" tabindex="-1"></a>        <span class="bu">super</span>().<span class="fu">__init__</span>()</span>
+<span id="cb21-6"><a href="architecture.html#cb21-6" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.mask_value <span class="op">=</span> mask_value</span>
+<span id="cb21-7"><a href="architecture.html#cb21-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-8"><a href="architecture.html#cb21-8" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> call(<span class="va">self</span>, inputs):</span>
+<span id="cb21-9"><a href="architecture.html#cb21-9" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Needed to ensure that mask gets recomputed</span></span>
+<span id="cb21-10"><a href="architecture.html#cb21-10" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="bu">hasattr</span>(inputs, _keras_mask_attr):</span>
+<span id="cb21-11"><a href="architecture.html#cb21-11" aria-hidden="true" tabindex="-1"></a>            <span class="bu">delattr</span>(inputs, _keras_mask_attr)</span>
+<span id="cb21-12"><a href="architecture.html#cb21-12" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> inputs</span>
+<span id="cb21-13"><a href="architecture.html#cb21-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-14"><a href="architecture.html#cb21-14" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> compute_mask(<span class="va">self</span>, inputs, mask<span class="op">=</span><span class="va">None</span>):</span>
+<span id="cb21-15"><a href="architecture.html#cb21-15" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> tf.math.not_equal(inputs, <span class="va">self</span>.mask_value)</span></code></pre></div>
+<p>To implement a mask producing layer, the class member function <code>compute_mask</code> is implemented. It takes the inputs and an optional mask argument and uses them to produce a new mask. Keras stores a tensor’s mask in the <code>_keras_mask</code> attribute. Notice that we remove this attribute in the <code>call</code> method. We found this to be necessary, because as we discovered TensorFlow has an efficiency “hack”, where it does not produce a mask when a mask producing layer’s output already has a mask. However, the <code>PaddingMask</code> simply passes its input forward which might have some preexisting mask which needs to be replaced.</p>
+<p>The other use of masking is in auto-regression. During training the decoder layer uses what is called <em>teacher forcing</em> where the loss is determined by the model’s output at position <span class="math inline">\(i\)</span>, where it receives the decoder input sequence up to but not including position <span class="math inline">\(i\)</span>. This achieved by masking in the decoder self-attention layer (see below), where positions pairs <span class="math inline">\((i, j)\)</span> with <span class="math inline">\(i&lt;j\)</span> are masked out. This means that the <span class="math inline">\(i{^{\mathrm{th}}}\)</span> query can only do lookups with the first <span class="math inline">\(i\)</span> keys (see Attention and Decoder Layer below). Without this masking there is a mismatch between the training, and what happens during inference which is necessarily auto-regressive. Indeed, we confirmed that the model outputs nonsense when trained without the auto-regressive mask.</p>
+<div class="sourceCode" id="cb22"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb22-1"><a href="architecture.html#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> create_look_ahead_mask(size):</span>
+<span id="cb22-2"><a href="architecture.html#cb22-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">&quot;&quot;&quot;</span></span>
+<span id="cb22-3"><a href="architecture.html#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="co">    Lower-triangular Boolean matrix</span></span>
+<span id="cb22-4"><a href="architecture.html#cb22-4" aria-hidden="true" tabindex="-1"></a><span class="co">    &quot;&quot;&quot;</span></span>
+<span id="cb22-5"><a href="architecture.html#cb22-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-6"><a href="architecture.html#cb22-6" aria-hidden="true" tabindex="-1"></a>    mask <span class="op">=</span> tf.cast(tf.linalg.band_part(tf.ones((size, size)), <span class="op">-</span><span class="dv">1</span>, <span class="dv">0</span>), tf.<span class="bu">bool</span>)</span>
+<span id="cb22-7"><a href="architecture.html#cb22-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> mask  <span class="co"># (size, size)</span></span>
+<span id="cb22-8"><a href="architecture.html#cb22-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-9"><a href="architecture.html#cb22-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-10"><a href="architecture.html#cb22-10" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> AutoRegressiveMask(Layer):</span>
+<span id="cb22-11"><a href="architecture.html#cb22-11" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>):</span>
+<span id="cb22-12"><a href="architecture.html#cb22-12" aria-hidden="true" tabindex="-1"></a>        <span class="bu">super</span>().<span class="fu">__init__</span>()</span>
+<span id="cb22-13"><a href="architecture.html#cb22-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-14"><a href="architecture.html#cb22-14" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> call(<span class="va">self</span>, inputs, mask<span class="op">=</span><span class="va">None</span>):</span>
+<span id="cb22-15"><a href="architecture.html#cb22-15" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Needed to ensure that mask gets recomputed</span></span>
+<span id="cb22-16"><a href="architecture.html#cb22-16" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="bu">hasattr</span>(inputs, _keras_mask_attr):</span>
+<span id="cb22-17"><a href="architecture.html#cb22-17" aria-hidden="true" tabindex="-1"></a>            <span class="bu">delattr</span>(inputs, _keras_mask_attr)</span>
+<span id="cb22-18"><a href="architecture.html#cb22-18" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> inputs</span>
+<span id="cb22-19"><a href="architecture.html#cb22-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-20"><a href="architecture.html#cb22-20" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> compute_mask(<span class="va">self</span>, inputs, mask<span class="op">=</span><span class="va">None</span>):</span>
+<span id="cb22-21"><a href="architecture.html#cb22-21" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> mask <span class="kw">is</span> <span class="va">None</span>:</span>
+<span id="cb22-22"><a href="architecture.html#cb22-22" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span> <span class="va">None</span></span>
+<span id="cb22-23"><a href="architecture.html#cb22-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-24"><a href="architecture.html#cb22-24" aria-hidden="true" tabindex="-1"></a>        seq_length <span class="op">=</span> tf.shape(inputs)[<span class="dv">1</span>]</span>
+<span id="cb22-25"><a href="architecture.html#cb22-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-26"><a href="architecture.html#cb22-26" aria-hidden="true" tabindex="-1"></a>        look_ahead_mask <span class="op">=</span> create_look_ahead_mask(seq_length)</span>
+<span id="cb22-27"><a href="architecture.html#cb22-27" aria-hidden="true" tabindex="-1"></a>        mask <span class="op">=</span> tf.logical_and(look_ahead_mask, tf.expand_dims(mask, axis<span class="op">=</span><span class="dv">1</span>))</span>
+<span id="cb22-28"><a href="architecture.html#cb22-28" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> mask</span></code></pre></div>
+</div>
+<div id="positional-encodings" class="section level2 hasAnchor" number="3.3">
+<h2><span class="header-section-number">3.3</span> Positional Encodings<a href="architecture.html#positional-encodings" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>An effective sequence-to-sequence models takes into account the ordering of its input sequences. For example, in the case of language translation, it should be more than just a bag of words model. Positional encodings are used to inform the model of the position of each symbol in a given input sequence. Thus the integers, representing <span class="math inline">\(0\)</span>-based indices, are mapped into <span class="math inline">\(\mathbb R^{d_{\mathrm{model}}}\)</span>. The particular encoding used here is given by the Fourier basis functions with wavelengths varying with the dimensions: An integer <span class="math inline">\(p\)</span> is mapped to <span class="math inline">\(E(p)=(E(p)_0,\dots,E(p)_{d_{\mathrm{model}}-1})\)</span> where
+<span class="math display">\[\begin{equation}
+\begin{split}
+E_{2i}(p)&amp;=\sin(p\cdot b^{-\frac{2i}{d_{\mathrm{model}}}}),\\
+E_{2i+1}(p)&amp;=\cos(p\cdot b^{-\frac{2i}{d_{\mathrm{model}}}}),
+\end{split}
+\end{equation}\]</span>
+where <span class="math inline">\(b\)</span> is the base of the encoding. The wavelengths <span class="math inline">\(\theta_i=2\pi\cdot b^{\frac{2i}{d_{\mathrm{model}}}}\)</span> form a geometric progression from <span class="math inline">\(2\pi\)</span> to <span class="math inline">\(2b\pi\)</span> (noninclusive). The <span class="math inline">\(2i{^{\mathrm{th}}}\)</span> dimension contains the <span class="math inline">\(\sin\)</span> Fourier basis functions at wavelength <span class="math inline">\(\theta_i\)</span>, evaluated at <span class="math inline">\(x=1\)</span>, and the <span class="math inline">\(2i+1{^{\mathrm{th}}}\)</span> dimension contains the <span class="math inline">\(\cos\)</span> basis functions at this wavelength. The use of varying wavelengths ensures that distant integers are dissimilar in <span class="math inline">\(d_{\mathrm{model}}\)</span>-space even though they might be very close in some dimensions. From basic properties of the Fourier basis, it follows that for each <span class="math inline">\(k\)</span> there exists a vector <span class="math inline">\(\lambda_k\in\mathbb R^{d_{\mathrm{model}}}\)</span> such that
+<span class="math display">\[\begin{equation}
+E(p+k)=\lambda_k\cdot E(p)\quad\text{for all $p$.}
+\end{equation}\]</span>
+In <span class="citation">Vaswani et al. (<a href="#ref-attention" role="doc-biblioref">2017</a>)</span> it is hypothesized that this latter property allow the model to relative position as well as actual position.</p>
+<p>The code for the <code>ScaledEmbedding</code> layer is displayed here, slightly simplified from the class in <code>embedding.py</code>. The <code>positional_encoding</code> function is from <code>positional_encoding.py</code> and was taken verbatim from the <a href="https://www.tensorflow.org/tutorials/text/transformer" title="Transformer model for language understanding">TensorFlow transformer tutorial</a>.</p>
+<div class="sourceCode" id="cb23"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb23-1"><a href="architecture.html#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> ScaledEmbedding(Layer):</span>
+<span id="cb23-2"><a href="architecture.html#cb23-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, input_dim, output_dim, dropout_rate, max_seqlen,</span>
+<span id="cb23-3"><a href="architecture.html#cb23-3" aria-hidden="true" tabindex="-1"></a>                 positional<span class="op">=</span><span class="va">True</span>):</span>
+<span id="cb23-4"><a href="architecture.html#cb23-4" aria-hidden="true" tabindex="-1"></a>        <span class="bu">super</span>().<span class="fu">__init__</span>()</span>
+<span id="cb23-5"><a href="architecture.html#cb23-5" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.embedding <span class="op">=</span> Embedding(input_dim, output_dim, mask_zero<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb23-6"><a href="architecture.html#cb23-6" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.positional <span class="op">=</span> positional</span>
+<span id="cb23-7"><a href="architecture.html#cb23-7" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> positional:</span>
+<span id="cb23-8"><a href="architecture.html#cb23-8" aria-hidden="true" tabindex="-1"></a>            <span class="va">self</span>._positions_enc <span class="op">=</span> positional_encoding(max_seqlen, output_dim)</span>
+<span id="cb23-9"><a href="architecture.html#cb23-9" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.dropout <span class="op">=</span> Dropout(dropout_rate)</span>
+<span id="cb23-10"><a href="architecture.html#cb23-10" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>._c <span class="op">=</span> tf.math.sqrt(tf.cast(output_dim, dtype<span class="op">=</span>tf.float32))</span>
+<span id="cb23-11"><a href="architecture.html#cb23-11" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.supports_masking <span class="op">=</span> <span class="va">True</span></span>
+<span id="cb23-12"><a href="architecture.html#cb23-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-13"><a href="architecture.html#cb23-13" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> call(<span class="va">self</span>, inputs, training<span class="op">=</span><span class="va">None</span>):</span>
+<span id="cb23-14"><a href="architecture.html#cb23-14" aria-hidden="true" tabindex="-1"></a>        x_enc <span class="op">=</span> <span class="va">self</span>.embedding(inputs) <span class="op">*</span> <span class="va">self</span>._c</span>
+<span id="cb23-15"><a href="architecture.html#cb23-15" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="va">self</span>.positional:</span>
+<span id="cb23-16"><a href="architecture.html#cb23-16" aria-hidden="true" tabindex="-1"></a>            seq_len <span class="op">=</span> tf.shape(inputs)[<span class="dv">1</span>]</span>
+<span id="cb23-17"><a href="architecture.html#cb23-17" aria-hidden="true" tabindex="-1"></a>            x_enc <span class="op">+=</span> <span class="va">self</span>._positions_enc[:, :seq_len, :]</span>
+<span id="cb23-18"><a href="architecture.html#cb23-18" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="va">self</span>.dropout(x_enc, training)</span></code></pre></div>
+<p>Custom layers that are not mask-producing, i.e. which do not modify the current input mask or create a new one, will destroy the current mask by default. Setting the <code>supports_masking</code> attribute to <code>True</code> allows the current mask to instead propagate through to the next layer unchanged. This is needed since we use <code>PaddingMask</code> before <code>ScaledEmbedding</code>, and this padding mask needs to be propagated to the encoder/decoder layers. Note that we could have used the built in <code>Embedding</code> layer to produce the padding mask, but this seemed less efficient because then we would need to add a <code>compute_mask</code> method to <code>ScaledEmbedding</code> which would then make a redundant second call to the <code>Embedding</code> just to get the mask.</p>
+<p>The dropout layer only has an effect during training, and for this reason our <code>call</code> method takes the optional Boolean <code>training</code> parameter to inform the <code>Dropout</code> layer. When using the Keras API for training or inference, it automatically passes the correct <code>training</code> value to all of its layers (including <code>ScaledEmbedding</code>). In fact, we do not even have to use the <code>training</code> parameter because the API will automatically pass the correct value to the dropout layer. However, we include it so that our custom <code>ScaledEmbededing</code> can also be used properly independently of the Keras API.</p>
+</div>
+<div id="transformer-sublayers" class="section level2 hasAnchor" number="3.4">
+<h2><span class="header-section-number">3.4</span> Transformer Sublayers<a href="architecture.html#transformer-sublayers" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>The transformer architecture contains only attention sublayers and simple feed-forward sublayers: “Attention is all you need”.
+Every sublayer in the transformer has a residual connection followed by Layer Normalization, which standardizes the output so that each sample has mean 0 and variance 1, as opposed to Batch Normalization which standardizes across the whole batch.</p>
+<p>Residual connections avoid the problem of vanishing gradients, but more importantly avoid the <em>Degradation problem</em> where adding additional layers degrade accuracy even on the training set (so not due to overtraining). They are introduced in <a href="https://openaccess.thecvf.com/content_cvpr_2016/papers/He_Deep_Residual_Learning_CVPR_2016_paper.pdf" title="Open Access">Deep Residual Learning for Image Recognition</a>.</p>
+<p>In general, mean/variance normalization speeds up stochastic gradient descent by creating a more symmetric error surface and also alleviates vanishing/exploding gradients in multilayer networks. <em>Batch Normalization</em> (BN) is a milestone technique, where the normalization is taken for each neuron over the input batch.
+BN is problematic for sequential models such as transformers, where the batch samples have differing sequence lengths. In <span class="citation">Ba, Kiros, and Hinton (<a href="#ref-layer-normalization" role="doc-biblioref">2016</a>)</span>, the alternative <em>Layer Normalization</em> is introduced where the normalization is over each layer instead of neuron, but is taken one sample at a time avoiding the issue with differing sequence lengths. See also <a href="https://arxiv.org/pdf/1803.08494.pdf" title="Group Normalization">Group Normalization</a> for more on generalizing Batch Normalization.</p>
+<p>Given an input <span class="math inline">\(x\)</span>, and possibly additional inputs <span class="math inline">\(...\)</span>, the output is then<span class="math inline">\(\operatorname{LayerNorm}(x + \operatorname{SubLayer}(x, ...))\)</span> where <span class="math inline">\(\operatorname{SubLayer}(x, ...)\)</span>
+is the output of either an attention or feed-forward sublayer. In order to facilitate the residual connections, the output of each layer, including the embedding layers, must have the same dimension <span class="math inline">\(d_{\mathrm{model}}\)</span>. The original paper used <span class="math inline">\(d_{\mathrm{model}}=512\)</span> dimensions, while we used <span class="math inline">\(d_{\mathrm{model}}=128\)</span>.</p>
+<p>The transformer sublayer is implemented in <code>sublayer.py</code>.</p>
+<div class="sourceCode" id="cb24"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb24-1"><a href="architecture.html#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> TransformerSubLayer(Layer):</span>
+<span id="cb24-2"><a href="architecture.html#cb24-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, input_sublayer, input_key<span class="op">=</span><span class="va">None</span>, epsilon<span class="op">=</span><span class="fl">1e-6</span>,</span>
+<span id="cb24-3"><a href="architecture.html#cb24-3" aria-hidden="true" tabindex="-1"></a>                 dropout_rate<span class="op">=</span><span class="fl">0.1</span>):</span>
+<span id="cb24-4"><a href="architecture.html#cb24-4" aria-hidden="true" tabindex="-1"></a>        <span class="bu">super</span>().<span class="fu">__init__</span>()</span>
+<span id="cb24-5"><a href="architecture.html#cb24-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-6"><a href="architecture.html#cb24-6" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.input_sublayer <span class="op">=</span> input_sublayer</span>
+<span id="cb24-7"><a href="architecture.html#cb24-7" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.input_key <span class="op">=</span> input_key</span>
+<span id="cb24-8"><a href="architecture.html#cb24-8" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.epsilon <span class="op">=</span> epsilon</span>
+<span id="cb24-9"><a href="architecture.html#cb24-9" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.dropout_rate <span class="op">=</span> dropout_rate</span>
+<span id="cb24-10"><a href="architecture.html#cb24-10" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.dropout <span class="op">=</span> Dropout(dropout_rate)</span>
+<span id="cb24-11"><a href="architecture.html#cb24-11" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.layernorm <span class="op">=</span> LayerNormalization(epsilon<span class="op">=</span>epsilon)</span>
+<span id="cb24-12"><a href="architecture.html#cb24-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-13"><a href="architecture.html#cb24-13" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> call(<span class="va">self</span>, inputs, training<span class="op">=</span><span class="va">False</span>, mask<span class="op">=</span><span class="va">None</span>):</span>
+<span id="cb24-14"><a href="architecture.html#cb24-14" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="va">self</span>.input_key <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span>:</span>
+<span id="cb24-15"><a href="architecture.html#cb24-15" aria-hidden="true" tabindex="-1"></a>            x <span class="op">=</span> inputs[<span class="va">self</span>.input_key]</span>
+<span id="cb24-16"><a href="architecture.html#cb24-16" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span>:</span>
+<span id="cb24-17"><a href="architecture.html#cb24-17" aria-hidden="true" tabindex="-1"></a>            x <span class="op">=</span> inputs</span>
+<span id="cb24-18"><a href="architecture.html#cb24-18" aria-hidden="true" tabindex="-1"></a>        sublayer_outputs <span class="op">=</span> <span class="va">self</span>.input_sublayer(inputs<span class="op">=</span>inputs, mask<span class="op">=</span>mask)</span>
+<span id="cb24-19"><a href="architecture.html#cb24-19" aria-hidden="true" tabindex="-1"></a>        outputs <span class="op">=</span> <span class="va">self</span>.dropout(sublayer_outputs, training)</span>
+<span id="cb24-20"><a href="architecture.html#cb24-20" aria-hidden="true" tabindex="-1"></a>        outputs <span class="op">+=</span> x  <span class="co"># Loses the mask info</span></span>
+<span id="cb24-21"><a href="architecture.html#cb24-21" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="va">self</span>.layernorm(outputs)</span>
+<span id="cb24-22"><a href="architecture.html#cb24-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-23"><a href="architecture.html#cb24-23" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> compute_mask(<span class="va">self</span>, inputs, mask<span class="op">=</span><span class="va">None</span>):</span>
+<span id="cb24-24"><a href="architecture.html#cb24-24" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> mask <span class="kw">is</span> <span class="va">None</span>:</span>
+<span id="cb24-25"><a href="architecture.html#cb24-25" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span> <span class="va">None</span></span>
+<span id="cb24-26"><a href="architecture.html#cb24-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-27"><a href="architecture.html#cb24-27" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="va">self</span>.input_key:</span>
+<span id="cb24-28"><a href="architecture.html#cb24-28" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span> mask[<span class="va">self</span>.input_key]</span>
+<span id="cb24-29"><a href="architecture.html#cb24-29" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> mask</span></code></pre></div>
+<p>The <code>input_layer</code> parameter is an TensorFlow <code>Layer</code> (in its use for the transformer this is either an attention sublayer or a feed-forward sublayer). The <code>inputs</code> to the <code>call</code> function are passed to this <code>input_layer</code>, and can be either a TensorFlow tensor or a <code>dict</code> mapping names to tensors in the case of multiple inputs. In the latter case, <code>input_key</code> indicates which member of the <code>dict</code> is the primary input to be used in the residual connection; and also the input masks are modified so that only the mask relevant to the output is returned.</p>
+</div>
+<div id="attention" class="section level2 hasAnchor" number="3.5">
+<h2><span class="header-section-number">3.5</span> Attention<a href="architecture.html#attention" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="scaled-dot-product-attention" class="section level3 hasAnchor" number="3.5.1">
+<h3><span class="header-section-number">3.5.1</span> Scaled Dot-Product Attention<a href="architecture.html#scaled-dot-product-attention" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Given <span class="math inline">\(n_k\)</span> keys of dimension <span class="math inline">\(d_k\)</span> and <span class="math inline">\(n_v=n_k\)</span> values of dimension <span class="math inline">\(d_v\)</span>, packed into an <span class="math inline">\(n_k\times d_k\)</span> matrix <span class="math inline">\(K\)</span> and an <span class="math inline">\(n_k\times d_v\)</span> matrix <span class="math inline">\(V\)</span>, respectively, along with <span class="math inline">\(n_q\)</span> queries of dimension <span class="math inline">\(d_q=d_k\)</span> packed as <span class="math inline">\(Q\)</span>, the attention function outputs the following <span class="math inline">\(n_q\times d_v\)</span> matrix:
+<span class="math display" id="eq:attention">\[\begin{equation}
+  \textrm{Attention}(Q,K,V)=\textrm{softmax}\left(\frac{QK^\top}{\sqrt{d_k}}\right)V,
+    \tag{3.1}
+\end{equation}\]</span>
+where the <span class="math inline">\(\mathrm{softmax}\)</span> is rowwise, so that the rows are probability distributions, forming an <span class="math inline">\(n_q\times n_k\)</span> matrix of <em>attention weights</em>. Thus the <span class="math inline">\(i^\mathrm{th}\)</span> row of the attention weight matrix gives a probability distribution (i.e. weights) over the values used to resolve the <span class="math inline">\(i^\mathrm{th}\)</span> query,
+where each weight is determined by the compatibility of the query with the corresponding key.</p>
+<p>In the case of sequence-to-sequence models, the <span class="math inline">\(i^\mathrm{th}\)</span> query corresponds to the <span class="math inline">\(i^\mathrm{th}\)</span> position of the input sequence and the <span class="math inline">\(j^\mathrm{th}\)</span> key/value pair corresponds to the <span class="math inline">\(j^\mathrm{th}\)</span> position of the target sequence, so that the attention mechanism determines how much weight is given to this pair in the output.</p>
+<p>In <code>attention.py</code>, we use nearly same code as in <a href="https://www.tensorflow.org/tutorials/text/transformer" title="Transformer model for language understanding">TensorFlow transformer tutorial</a> to implement the scaled dot-product attention in <a href="architecture.html#eq:attention">(3.1)</a>, generalized to tensors and including masking, except that the <code>mask</code> parameter is a Boolean tensor (one Boolean value per timestep in the input) used to skip certain input timesteps when processing timeseries data.</p>
+<div class="sourceCode" id="cb25"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb25-1"><a href="architecture.html#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> scaled_dot_product_attention(q, k, v, mask):</span>
+<span id="cb25-2"><a href="architecture.html#cb25-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">&quot;&quot;&quot;Calculate the attention weights.</span></span>
+<span id="cb25-3"><a href="architecture.html#cb25-3" aria-hidden="true" tabindex="-1"></a><span class="co">    q, k, v must have matching leading dimensions.</span></span>
+<span id="cb25-4"><a href="architecture.html#cb25-4" aria-hidden="true" tabindex="-1"></a><span class="co">    k, v must have matching penultimate dimension, i.e.: n_k = n_v.</span></span>
+<span id="cb25-5"><a href="architecture.html#cb25-5" aria-hidden="true" tabindex="-1"></a><span class="co">    q, k must have matching last dimension, i.e.: d_q = d_k.</span></span>
+<span id="cb25-6"><a href="architecture.html#cb25-6" aria-hidden="true" tabindex="-1"></a><span class="co">    The mask has different shapes depending on its type(padding or look ahead)</span></span>
+<span id="cb25-7"><a href="architecture.html#cb25-7" aria-hidden="true" tabindex="-1"></a><span class="co">    but it must be broadcastable for addition.</span></span>
+<span id="cb25-8"><a href="architecture.html#cb25-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-9"><a href="architecture.html#cb25-9" aria-hidden="true" tabindex="-1"></a><span class="co">    Args:</span></span>
+<span id="cb25-10"><a href="architecture.html#cb25-10" aria-hidden="true" tabindex="-1"></a><span class="co">      q: query shape == (..., n_q, d_q)</span></span>
+<span id="cb25-11"><a href="architecture.html#cb25-11" aria-hidden="true" tabindex="-1"></a><span class="co">      k: key shape == (..., n_k, d_k)</span></span>
+<span id="cb25-12"><a href="architecture.html#cb25-12" aria-hidden="true" tabindex="-1"></a><span class="co">      v: value shape == (..., n_v, d_v)</span></span>
+<span id="cb25-13"><a href="architecture.html#cb25-13" aria-hidden="true" tabindex="-1"></a><span class="co">      mask: Boolean tensor with shape broadcastable</span></span>
+<span id="cb25-14"><a href="architecture.html#cb25-14" aria-hidden="true" tabindex="-1"></a><span class="co">            to (..., n_q, n_k). Defaults to None.</span></span>
+<span id="cb25-15"><a href="architecture.html#cb25-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-16"><a href="architecture.html#cb25-16" aria-hidden="true" tabindex="-1"></a><span class="co">    Returns:</span></span>
+<span id="cb25-17"><a href="architecture.html#cb25-17" aria-hidden="true" tabindex="-1"></a><span class="co">      output, attention_weights</span></span>
+<span id="cb25-18"><a href="architecture.html#cb25-18" aria-hidden="true" tabindex="-1"></a><span class="co">    &quot;&quot;&quot;</span></span>
+<span id="cb25-19"><a href="architecture.html#cb25-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-20"><a href="architecture.html#cb25-20" aria-hidden="true" tabindex="-1"></a>    matmul_qk <span class="op">=</span> tf.matmul(q, k, transpose_b<span class="op">=</span><span class="va">True</span>)  <span class="co"># (..., n_q, n_k)</span></span>
+<span id="cb25-21"><a href="architecture.html#cb25-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-22"><a href="architecture.html#cb25-22" aria-hidden="true" tabindex="-1"></a>    <span class="co"># scale matmul_qk</span></span>
+<span id="cb25-23"><a href="architecture.html#cb25-23" aria-hidden="true" tabindex="-1"></a>    dk <span class="op">=</span> tf.cast(tf.shape(k)[<span class="op">-</span><span class="dv">1</span>], tf.float32)</span>
+<span id="cb25-24"><a href="architecture.html#cb25-24" aria-hidden="true" tabindex="-1"></a>    scaled_attention_logits <span class="op">=</span> matmul_qk <span class="op">/</span> tf.math.sqrt(dk)</span>
+<span id="cb25-25"><a href="architecture.html#cb25-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-26"><a href="architecture.html#cb25-26" aria-hidden="true" tabindex="-1"></a>    <span class="co"># add -infinity to the masked out positions in the scaled tensor.</span></span>
+<span id="cb25-27"><a href="architecture.html#cb25-27" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> mask <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span>:</span>
+<span id="cb25-28"><a href="architecture.html#cb25-28" aria-hidden="true" tabindex="-1"></a>        masked_out <span class="op">=</span> tf.cast(tf.math.logical_not(mask), tf.float32)</span>
+<span id="cb25-29"><a href="architecture.html#cb25-29" aria-hidden="true" tabindex="-1"></a>        scaled_attention_logits <span class="op">+=</span> masked_out <span class="op">*</span> <span class="op">-</span><span class="fl">1e9</span></span>
+<span id="cb25-30"><a href="architecture.html#cb25-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-31"><a href="architecture.html#cb25-31" aria-hidden="true" tabindex="-1"></a>    <span class="co"># softmax is normalized on the last axis (n_k) so that the scores</span></span>
+<span id="cb25-32"><a href="architecture.html#cb25-32" aria-hidden="true" tabindex="-1"></a>    <span class="co"># add up to 1.</span></span>
+<span id="cb25-33"><a href="architecture.html#cb25-33" aria-hidden="true" tabindex="-1"></a>    attention_weights <span class="op">=</span> tf.nn.softmax(scaled_attention_logits, axis<span class="op">=-</span><span class="dv">1</span>)  <span class="co"># (..., n_q, n_k)</span></span>
+<span id="cb25-34"><a href="architecture.html#cb25-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-35"><a href="architecture.html#cb25-35" aria-hidden="true" tabindex="-1"></a>    output <span class="op">=</span> tf.matmul(attention_weights, v)  <span class="co"># (..., n_q, d_v)</span></span>
+<span id="cb25-36"><a href="architecture.html#cb25-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-37"><a href="architecture.html#cb25-37" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> output, attention_weights</span></code></pre></div>
+</div>
+<div id="attention-layer" class="section level3 hasAnchor" number="3.5.2">
+<h3><span class="header-section-number">3.5.2</span> Attention Layer<a href="architecture.html#attention-layer" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>For simplicity we present a single-head attention layer here. The actual transformer uses a multi-head attention layer in <code>attention.py</code>. It is implemented as a <a href="https://www.tensorflow.org/tutorials/customization/custom_layers" title="Custom Layer">custom layer</a>, using the Keras <a href="https://www.tensorflow.org/guide/keras/custom_layers_and_models" title="Making new Layers and Models via subclassing">Layer subclassing API</a>.</p>
+<p>In the Keras Layer subclassing API, a custom layer is implemented as a <code>class</code> that inherits from <code>Layer</code>,
+and implements a <code>call</code> method with mandatory argument <code>inputs</code>, and “privileged” optional arguments <code>training</code> and <code>mask</code>. The API also specifies a <code>build</code> method for initialization steps which can only be performed after the input shape is known, but this does not apply to any of our layers.</p>
+<p>The <code>SingleHeadAttention</code> layer is a <a href="https://www.tensorflow.org/guide/keras/masking_and_padding#writing_layers_that_need_mask_information" title="Writing layers that need mask information">mask consuming layer</a>. Thus its <code>call</code> method exposes the <code>mask</code> parameter which gets passed on to <code>scaled_dot_product_attention</code>, to indicate which position pairs <span class="math inline">\((i, j)\)</span> in the inputs and targets to ignore.</p>
+<p><strong><code>single_head_attention_layer.py</code></strong></p>
+<div class="sourceCode" id="cb26"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb26-1"><a href="architecture.html#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> SingleHeadAttention(Layer):</span>
+<span id="cb26-2"><a href="architecture.html#cb26-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, d_model):</span>
+<span id="cb26-3"><a href="architecture.html#cb26-3" aria-hidden="true" tabindex="-1"></a>        <span class="bu">super</span>().<span class="fu">__init__</span>()</span>
+<span id="cb26-4"><a href="architecture.html#cb26-4" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.d_model <span class="op">=</span> d_model</span>
+<span id="cb26-5"><a href="architecture.html#cb26-5" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.dense <span class="op">=</span> Dense(d_model)</span>
+<span id="cb26-6"><a href="architecture.html#cb26-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-7"><a href="architecture.html#cb26-7" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> call(<span class="va">self</span>, inputs, mask<span class="op">=</span><span class="va">None</span>):</span>
+<span id="cb26-8"><a href="architecture.html#cb26-8" aria-hidden="true" tabindex="-1"></a>        q, k, v <span class="op">=</span> inputs[<span class="st">&#39;q&#39;</span>], inputs[<span class="st">&#39;k&#39;</span>], inputs[<span class="st">&#39;v&#39;</span>]</span>
+<span id="cb26-9"><a href="architecture.html#cb26-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-10"><a href="architecture.html#cb26-10" aria-hidden="true" tabindex="-1"></a>        scaled_attention, attention_weights <span class="op">=</span> scaled_dot_product_attention(</span>
+<span id="cb26-11"><a href="architecture.html#cb26-11" aria-hidden="true" tabindex="-1"></a>            q, k, v, mask)</span>
+<span id="cb26-12"><a href="architecture.html#cb26-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-13"><a href="architecture.html#cb26-13" aria-hidden="true" tabindex="-1"></a>        output <span class="op">=</span> <span class="va">self</span>.dense(scaled_attention)  <span class="co"># (batch_size, seq_len_q, d_model)</span></span>
+<span id="cb26-14"><a href="architecture.html#cb26-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-15"><a href="architecture.html#cb26-15" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> output, attention_weights</span></code></pre></div>
+<p>This layer performs the calculation:
+<span class="math display" id="eq:single-attention">\[\begin{equation}
+  \operatorname{SingleHeadAttention}(Q, K, V)=\operatorname{Attention}(Q, K, V)W^O,
+   \tag{3.2}
+\end{equation}\]</span>
+where <span class="math inline">\(W^O\in\mathbb R^{d_v\times d_\mathrm{model}}\)</span> is the learned linear projection of the scaled dot-product to <span class="math inline">\(d_\mathrm{model}\)</span>-space.
+Note that even though we shall always have <span class="math inline">\(d_v=d_\mathrm{model}\)</span> the projection is still important to orient the output, since it is used in calculations such as <span class="math inline">\(x+\operatorname{SingleHeadAttention}(x,x,x)\)</span> where the orientation of the output becomes relevant. Indeed we verified that while the transformer still learns without the final projection, the results are substantially worse. (We did not make actual benchmarks, but simply inspected the model outputs after training for the same number of epochs in each case.)</p>
+<div id="multi-head-attention" class="section level4 hasAnchor" number="3.5.2.1">
+<h4><span class="header-section-number">3.5.2.1</span> Multi-Head Attention<a href="architecture.html#multi-head-attention" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>The multi-head attention splits the attention mechanism into <span class="math inline">\(n\)</span> separate “heads”, each with their own representation of the queries, keys and values. They run in parallel, allowing the model to attend simultaneously to different position pairs in different representation spaces:
+<span class="math display">\[\begin{equation}
+  \operatorname{MultiHeadAttention}(Q, K, V)=\operatorname{Concat}(\mathrm{head}_1,\dots,\mathrm{head}_n)W^O
+\end{equation}\]</span>
+where <span class="math inline">\(\operatorname{Concat}\)</span> is row-wise concatenation and
+<span class="math display">\[\begin{equation}
+  \mathrm{head}_i=\operatorname{Attention}(Q W_i^Q, K W_i^K , V W_i^V),
+\end{equation}\]</span>
+and <span class="math inline">\(W_i^Q\in\mathbb R^{d_{\mathrm{model}}\times d_k}\)</span>, <span class="math inline">\(W_i^K\in\mathbb R^{d_{\mathrm{model}}\times d_k}\)</span>,
+<span class="math inline">\(W_i^V\in\mathbb R^{d_{\mathrm{model}}\times d_v}\)</span> and <span class="math inline">\(W^O\in\mathbb R^{h d_v\times{d_{\mathrm{model}}}}\)</span> are projections.</p>
+<p>In transformer architecture, the representation spaces are all of dimensions <span class="math inline">\(d_q=d_k=d_v=d_{\mathrm{model}}\mathbin{/}h\)</span>.
+We use <span class="math inline">\(h=8\)</span> heads as in the original paper, and saw an visible improvement of the single-head architecture.
+As noted in the paper, a single-head attention cannot simultaneously attend differently in different representation subspaces. If one tries to add projections <span class="math inline">\(W^Q\)</span>, <span class="math inline">\(W^K\)</span> and <span class="math inline">\(W^V\)</span> in equation <a href="architecture.html#eq:single-attention">(3.2)</a>, they will simply be factored out into <span class="math inline">\(W^O\)</span> and have no effect.</p>
+<p>The code for the <code>MultiHeadAttention</code> class is in <code>attention.py</code> and is nearly the same as the corresponding class in the <a href="https://www.tensorflow.org/tutorials/text/transformer" title="Transformer model for language understanding">official transformer tutorial</a>, except that the <code>call</code> method signature has been modified to conform with the Keras API.</p>
+</div>
+<div id="contextual-embeddings" class="section level4 hasAnchor" number="3.5.2.2">
+<h4><span class="header-section-number">3.5.2.2</span> Contextual Embeddings<a href="architecture.html#contextual-embeddings" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>In contrast to the embedding layers, which embed a symbol to the same vector regardless of its position in the sequence (besides the added positional encoding which encodes only its ordinal position), the attention layers are contextual embeddings meaning that the representation of each symbol is based on the entire input sequence—except when an auto-regressive mask is used so that it only depends on the preceding symbols in the sequence, as in the self-attention of the decoder layer described below.</p>
+</div>
+</div>
+</div>
+<div id="feed-forward-networks" class="section level2 hasAnchor" number="3.6">
+<h2><span class="header-section-number">3.6</span> Feed-Forward Networks<a href="architecture.html#feed-forward-networks" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Each transformer sublayer has a fully connected feed-forward network consisting of two layers with a single ReLU activation in between. The first layer has dimension <span class="math inline">\(\mathrm{dff}\)</span> which is <span class="math inline">\(2048\)</span> in the paper, while we use the smaller value of <span class="math inline">\(512\)</span> in our example code. The second output layer has dimension <span class="math inline">\(d_{\mathrm{model}}\)</span>, the same as the input. Note that each position of the sequential input gets passed through the identical feed-forward network.
+This is the only place in the transformer architecture where there is nonlinearity.
+It is where the queries, keys and values are learned for the self-attention layers of the encoder and decoder, as described next.</p>
+<p>These can be easily implemented using the Sequential API. A slightly simplified version of the code in <code>feed_forward</code> is as follows.</p>
+<div class="sourceCode" id="cb27"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb27-1"><a href="architecture.html#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> pointwise_feed_forward_network(d_model, dff):</span>
+<span id="cb27-2"><a href="architecture.html#cb27-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> Sequential([</span>
+<span id="cb27-3"><a href="architecture.html#cb27-3" aria-hidden="true" tabindex="-1"></a>        Dense(dff, activation<span class="op">=</span><span class="st">&#39;relu&#39;</span>),  <span class="co"># (batch_size, seq_len, dff)</span></span>
+<span id="cb27-4"><a href="architecture.html#cb27-4" aria-hidden="true" tabindex="-1"></a>        Dense(d_model)  <span class="co"># (batch_size, seq_len, d_model)</span></span>
+<span id="cb27-5"><a href="architecture.html#cb27-5" aria-hidden="true" tabindex="-1"></a>    ])</span></code></pre></div>
+</div>
+<div id="encoder" class="section level2 hasAnchor" number="3.7">
+<h2><span class="header-section-number">3.7</span> Encoder<a href="architecture.html#encoder" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>The encoder is a stack of <span class="math inline">\(N\)</span> identical encoder layers, where <span class="math inline">\(N=6\)</span> in the paper while we use 4 layers in our example. The output of the encoder, which is the output of the last encoder layer, is a sequence of elements in <span class="math inline">\(d_{\mathrm{model}}\)</span>-dimensions space of the same length as the sequence input to the encoder. This output <span class="math inline">\(x\)</span> is learned in the encoder layers to serve as a key-value lookup of the form <span class="math inline">\((x, x)\)</span> (from <span class="math inline">\(d_{\mathrm{model}}\)</span>-space into <span class="math inline">\(d_{\mathrm{model}}\)</span>-space). This lookup is the information that is passed from the encoder to the decoder, where the decoder queries the lookup from its own input.</p>
+<div id="encoder-layer" class="section level3 hasAnchor" number="3.7.1">
+<h3><span class="header-section-number">3.7.1</span> Encoder Layer<a href="architecture.html#encoder-layer" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Each encoder layer consists of a self-attention sublayer followed by a feed-forward sublayer. This is naturally implemented with the Sequential API. The following is (a slightly simplified version of) the function from <code>encoder.py</code> which creates the encoder layer.</p>
+<div class="sourceCode" id="cb28"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb28-1"><a href="architecture.html#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> encoder_layer(d_model, num_heads, dff, dropout_rate):</span>
+<span id="cb28-2"><a href="architecture.html#cb28-2" aria-hidden="true" tabindex="-1"></a>    mha <span class="op">=</span> MultiHeadSelfAttention(d_model, num_heads, mask_rank<span class="op">=</span><span class="dv">2</span>)</span>
+<span id="cb28-3"><a href="architecture.html#cb28-3" aria-hidden="true" tabindex="-1"></a>    ffn <span class="op">=</span> pointwise_feed_forward_network(d_model, dff)</span>
+<span id="cb28-4"><a href="architecture.html#cb28-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-5"><a href="architecture.html#cb28-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> tf.keras.Sequential([</span>
+<span id="cb28-6"><a href="architecture.html#cb28-6" aria-hidden="true" tabindex="-1"></a>        TransformerSubLayer(mha, epsilon<span class="op">=</span><span class="fl">1e-6</span>, dropout_rate<span class="op">=</span>dropout_rate),</span>
+<span id="cb28-7"><a href="architecture.html#cb28-7" aria-hidden="true" tabindex="-1"></a>        TransformerSubLayer(ffn, epsilon<span class="op">=</span><span class="fl">1e-6</span>, dropout_rate<span class="op">=</span>dropout_rate)</span>
+<span id="cb28-8"><a href="architecture.html#cb28-8" aria-hidden="true" tabindex="-1"></a>    ])</span></code></pre></div>
+<p>The encoder itself can be simply implemented using the Sequential API. The <code>encoder</code> function from <code>encoder.py</code> implements the entire encoder stack including the input embeddings.</p>
+<div class="sourceCode" id="cb29"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb29-1"><a href="architecture.html#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> encoder(num_layers, d_model, num_heads, dff, input_vocab_size,</span>
+<span id="cb29-2"><a href="architecture.html#cb29-2" aria-hidden="true" tabindex="-1"></a>            maximum_position_encoding, dropout_rate):</span>
+<span id="cb29-3"><a href="architecture.html#cb29-3" aria-hidden="true" tabindex="-1"></a>    layer_list <span class="op">=</span> [</span>
+<span id="cb29-4"><a href="architecture.html#cb29-4" aria-hidden="true" tabindex="-1"></a>        PaddingMask(mask_value<span class="op">=</span><span class="dv">0</span>),</span>
+<span id="cb29-5"><a href="architecture.html#cb29-5" aria-hidden="true" tabindex="-1"></a>        ScaledEmbedding(input_vocab_size, d_model, dropout_rate,</span>
+<span id="cb29-6"><a href="architecture.html#cb29-6" aria-hidden="true" tabindex="-1"></a>                        maximum_position_encoding, positional<span class="op">=</span><span class="va">True</span>)] <span class="op">+</span> <span class="op">\</span></span>
+<span id="cb29-7"><a href="architecture.html#cb29-7" aria-hidden="true" tabindex="-1"></a>        [encoder_layer(d_model, num_heads, dff, dropout_rate)</span>
+<span id="cb29-8"><a href="architecture.html#cb29-8" aria-hidden="true" tabindex="-1"></a>         <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(num_layers)]</span>
+<span id="cb29-9"><a href="architecture.html#cb29-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-10"><a href="architecture.html#cb29-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> Sequential(layer_list)</span></code></pre></div>
+</div>
+</div>
+<div id="decoder" class="section level2 hasAnchor" number="3.8">
+<h2><span class="header-section-number">3.8</span> Decoder<a href="architecture.html#decoder" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>The decoder is a stack of <span class="math inline">\(N\)</span> identical decoder layers. The output of the decoder is fed to the model “head” and determines the probability distribution over the target symbols for each element in the decoder input sequence.</p>
+<div id="decoder-layer" class="section level3 hasAnchor" number="3.8.1">
+<h3><span class="header-section-number">3.8.1</span> Decoder Layer<a href="architecture.html#decoder-layer" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Each decoder layer begins with a self-attention layer using the auto-regressive mask to prevent position <span class="math inline">\(i\)</span> attending on (i.e. looking up) a position <span class="math inline">\(j&gt;i\)</span>. Note that since the target is shifted by one, position <span class="math inline">\(i\)</span> should still looks up itself.
+This is followed by the encoder-decoder attention sublayer which uses the output of the self-attention decoder sublayer as a query to the key-value lookup output by the encoder. The third sublayer is the feed-forward sublayer.</p>
+<p>We cannot use the Sequential API for the decoder layer since it takes two inputs: the encoder output and the decoder input. It can naturally be implemented using the Functional API. This is (a slightly simplified version of) the decoder layer creation function from <code>decoder.py</code>.</p>
+<div class="sourceCode" id="cb30"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb30-1"><a href="architecture.html#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> decoder_layer(d_model, num_heads, dff, dropout_rate):</span>
+<span id="cb30-2"><a href="architecture.html#cb30-2" aria-hidden="true" tabindex="-1"></a>    encoder_output <span class="op">=</span> Input(shape<span class="op">=</span>(<span class="va">None</span>, d_model), name<span class="op">=</span><span class="st">&#39;encoder_output&#39;</span>)</span>
+<span id="cb30-3"><a href="architecture.html#cb30-3" aria-hidden="true" tabindex="-1"></a>    decoder_input <span class="op">=</span> Input(shape<span class="op">=</span>(<span class="va">None</span>, d_model), name<span class="op">=</span><span class="st">&#39;decoder_input&#39;</span>)</span>
+<span id="cb30-4"><a href="architecture.html#cb30-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-5"><a href="architecture.html#cb30-5" aria-hidden="true" tabindex="-1"></a>    auto_regress <span class="op">=</span> AutoRegressiveMask()</span>
+<span id="cb30-6"><a href="architecture.html#cb30-6" aria-hidden="true" tabindex="-1"></a>    mha_self <span class="op">=</span> MultiHeadSelfAttention(d_model, num_heads, mask_rank<span class="op">=</span><span class="dv">4</span>)</span>
+<span id="cb30-7"><a href="architecture.html#cb30-7" aria-hidden="true" tabindex="-1"></a>    mha_auto_reg <span class="op">=</span> Sequential([auto_regress, mha_self])</span>
+<span id="cb30-8"><a href="architecture.html#cb30-8" aria-hidden="true" tabindex="-1"></a>    mha_self_sublayer <span class="op">=</span> TransformerSubLayer(mha_auto_reg, epsilon<span class="op">=</span><span class="fl">1e-6</span>,</span>
+<span id="cb30-9"><a href="architecture.html#cb30-9" aria-hidden="true" tabindex="-1"></a>                                            dropout_rate<span class="op">=</span>dropout_rate)</span>
+<span id="cb30-10"><a href="architecture.html#cb30-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-11"><a href="architecture.html#cb30-11" aria-hidden="true" tabindex="-1"></a>    mha_2inp <span class="op">=</span> MultiHeadTwoInputAttention(d_model, num_heads)</span>
+<span id="cb30-12"><a href="architecture.html#cb30-12" aria-hidden="true" tabindex="-1"></a>    mha_2inp_sublayer <span class="op">=</span> TransformerSubLayer(mha_2inp, input_key<span class="op">=</span><span class="st">&#39;queries&#39;</span>,</span>
+<span id="cb30-13"><a href="architecture.html#cb30-13" aria-hidden="true" tabindex="-1"></a>                                            epsilon<span class="op">=</span><span class="fl">1e-6</span>, dropout_rate<span class="op">=</span>dropout_rate)</span>
+<span id="cb30-14"><a href="architecture.html#cb30-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-15"><a href="architecture.html#cb30-15" aria-hidden="true" tabindex="-1"></a>    ffn <span class="op">=</span> pointwise_feed_forward_network(d_model, dff)</span>
+<span id="cb30-16"><a href="architecture.html#cb30-16" aria-hidden="true" tabindex="-1"></a>    ffn_sublayer <span class="op">=</span> TransformerSubLayer(ffn, epsilon<span class="op">=</span><span class="fl">1e-6</span>, dropout_rate<span class="op">=</span>dropout_rate)</span>
+<span id="cb30-17"><a href="architecture.html#cb30-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-18"><a href="architecture.html#cb30-18" aria-hidden="true" tabindex="-1"></a>    out1 <span class="op">=</span> mha_self_sublayer(decoder_input)</span>
+<span id="cb30-19"><a href="architecture.html#cb30-19" aria-hidden="true" tabindex="-1"></a>    out2 <span class="op">=</span> mha_2inp_sublayer(<span class="bu">dict</span>(queries<span class="op">=</span>out1, lookups<span class="op">=</span>encoder_output))</span>
+<span id="cb30-20"><a href="architecture.html#cb30-20" aria-hidden="true" tabindex="-1"></a>    outputs <span class="op">=</span> ffn_sublayer(out2)</span>
+<span id="cb30-21"><a href="architecture.html#cb30-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-22"><a href="architecture.html#cb30-22" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> Model(inputs<span class="op">=</span>[encoder_output, decoder_input], outputs<span class="op">=</span>outputs)</span></code></pre></div>
+<p>The decoder itself including the inputs can then also be implemented with the Functional API. From <code>decoder.py</code>:</p>
+<div class="sourceCode" id="cb31"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb31-1"><a href="architecture.html#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> decoder(num_layers, d_model, num_heads, dff, target_vocab_size,</span>
+<span id="cb31-2"><a href="architecture.html#cb31-2" aria-hidden="true" tabindex="-1"></a>            maximum_position_encoding, dropout_rate<span class="op">=</span><span class="fl">0.1</span>):</span>
+<span id="cb31-3"><a href="architecture.html#cb31-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-4"><a href="architecture.html#cb31-4" aria-hidden="true" tabindex="-1"></a>    encoder_output <span class="op">=</span> Input(shape<span class="op">=</span>(<span class="va">None</span>, d_model), name<span class="op">=</span><span class="st">&#39;encoder_output&#39;</span>)</span>
+<span id="cb31-5"><a href="architecture.html#cb31-5" aria-hidden="true" tabindex="-1"></a>    decoder_input <span class="op">=</span> Input(shape<span class="op">=</span>(<span class="va">None</span>, ), name<span class="op">=</span><span class="st">&#39;decoder_input&#39;</span>)</span>
+<span id="cb31-6"><a href="architecture.html#cb31-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-7"><a href="architecture.html#cb31-7" aria-hidden="true" tabindex="-1"></a>    embedding <span class="op">=</span> Sequential([PaddingMask(),</span>
+<span id="cb31-8"><a href="architecture.html#cb31-8" aria-hidden="true" tabindex="-1"></a>                            ScaledEmbedding(target_vocab_size,</span>
+<span id="cb31-9"><a href="architecture.html#cb31-9" aria-hidden="true" tabindex="-1"></a>                                            d_model, dropout_rate,</span>
+<span id="cb31-10"><a href="architecture.html#cb31-10" aria-hidden="true" tabindex="-1"></a>                                            maximum_position_encoding,</span>
+<span id="cb31-11"><a href="architecture.html#cb31-11" aria-hidden="true" tabindex="-1"></a>                                            positional<span class="op">=</span><span class="va">True</span>)])</span>
+<span id="cb31-12"><a href="architecture.html#cb31-12" aria-hidden="true" tabindex="-1"></a>    decoder_layers <span class="op">=</span> [</span>
+<span id="cb31-13"><a href="architecture.html#cb31-13" aria-hidden="true" tabindex="-1"></a>        decoder_layer(d_model, num_heads, dff, dropout_rate<span class="op">=</span>dropout_rate)</span>
+<span id="cb31-14"><a href="architecture.html#cb31-14" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(num_layers)]</span>
+<span id="cb31-15"><a href="architecture.html#cb31-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-16"><a href="architecture.html#cb31-16" aria-hidden="true" tabindex="-1"></a>    x <span class="op">=</span> embedding(decoder_input)</span>
+<span id="cb31-17"><a href="architecture.html#cb31-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(num_layers):</span>
+<span id="cb31-18"><a href="architecture.html#cb31-18" aria-hidden="true" tabindex="-1"></a>        x <span class="op">=</span> decoder_layers[i](<span class="bu">dict</span>(decoder_input<span class="op">=</span>x, encoder_output<span class="op">=</span>encoder_output))</span>
+<span id="cb31-19"><a href="architecture.html#cb31-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-20"><a href="architecture.html#cb31-20" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> Model(inputs<span class="op">=</span>[encoder_output, decoder_input], outputs<span class="op">=</span>x)</span></code></pre></div>
+<p>Note that unlike the decoder layers the shape for the <code>decoder_input</code> is <code>(None, )</code> for the decoder itself, since the inputs are tokenized sequences which have not yet been embedded in <span class="math inline">\(d_{\mathrm{model}}\)</span>-space.</p>
+</div>
+</div>
+<div id="transformer-model" class="section level2 hasAnchor" number="3.9">
+<h2><span class="header-section-number">3.9</span> Transformer Model<a href="architecture.html#transformer-model" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>The final transformer model has two inputs, the tokenized encoder and decoder sequences. First the encoder input is fed to the stack of encoder layers, and the resulting output is combined with the decoder input to feed to the stack of decoder layers. The decoder output is then passed to a final fully connected layer whose dimension is the size of the target vocabulary (i.e. number of symbols), so that the model output can predict target symbols. More precisely, as an auto-regressive model it is predicting the next-symbol probabilities.</p>
+<p>In <span class="citation">Vaswani et al. (<a href="#ref-attention" role="doc-biblioref">2017, 3.4</a>)</span> it is stated that the encoder and decoder embedding layers and the final fully connected layer all share the same weight matrix, and thus all have the same symbol embedding. This method is introduced in <span class="citation">Press and Wolf (<a href="#ref-weight-tying" role="doc-biblioref">2016</a>)</span>, where is it claimed for example that using a standard subword tokenizer an English/French translation task show up to 90% of the same subwords. For this method the union of the subwords is taken so that the the source/target vocabularies are the same. In our implementation, the source and target vocabularies are not merged and these three weight matrices are all learned separately.</p>
+<p>The transformer can be implemented naturally using the Functional API. The code in <code>transformer.py</code> is slightly simplified as follows.</p>
+<div class="sourceCode" id="cb32"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb32-1"><a href="architecture.html#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> transformer(num_layers, d_model, num_heads, dff,</span>
+<span id="cb32-2"><a href="architecture.html#cb32-2" aria-hidden="true" tabindex="-1"></a>                input_vocab_size, target_vocab_size,</span>
+<span id="cb32-3"><a href="architecture.html#cb32-3" aria-hidden="true" tabindex="-1"></a>                pe_input_max, pe_target_max, dropout_rate):</span>
+<span id="cb32-4"><a href="architecture.html#cb32-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-5"><a href="architecture.html#cb32-5" aria-hidden="true" tabindex="-1"></a>    encoder_input <span class="op">=</span> Input(shape<span class="op">=</span>(<span class="va">None</span>,), name<span class="op">=</span><span class="st">&#39;encoder_input&#39;</span>)</span>
+<span id="cb32-6"><a href="architecture.html#cb32-6" aria-hidden="true" tabindex="-1"></a>    decoder_input <span class="op">=</span> Input(shape<span class="op">=</span>(<span class="va">None</span>,), name<span class="op">=</span><span class="st">&#39;decoder_input&#39;</span>)</span>
+<span id="cb32-7"><a href="architecture.html#cb32-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-8"><a href="architecture.html#cb32-8" aria-hidden="true" tabindex="-1"></a>    encoder_stack <span class="op">=</span> encoder(num_layers, d_model, num_heads, dff,</span>
+<span id="cb32-9"><a href="architecture.html#cb32-9" aria-hidden="true" tabindex="-1"></a>                            input_vocab_size, pe_input_max, dropout_rate)</span>
+<span id="cb32-10"><a href="architecture.html#cb32-10" aria-hidden="true" tabindex="-1"></a>    decoder_stack <span class="op">=</span> decoder(num_layers, d_model, num_heads, dff,</span>
+<span id="cb32-11"><a href="architecture.html#cb32-11" aria-hidden="true" tabindex="-1"></a>                            target_vocab_size, pe_target_max, dropout_rate)</span>
+<span id="cb32-12"><a href="architecture.html#cb32-12" aria-hidden="true" tabindex="-1"></a>    final_layer <span class="op">=</span> Dense(target_vocab_size)</span>
+<span id="cb32-13"><a href="architecture.html#cb32-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-14"><a href="architecture.html#cb32-14" aria-hidden="true" tabindex="-1"></a>    encoder_output <span class="op">=</span> encoder_stack(encoder_input)</span>
+<span id="cb32-15"><a href="architecture.html#cb32-15" aria-hidden="true" tabindex="-1"></a>    decoder_output <span class="op">=</span> decoder_stack(</span>
+<span id="cb32-16"><a href="architecture.html#cb32-16" aria-hidden="true" tabindex="-1"></a>        <span class="bu">dict</span>(decoder_input<span class="op">=</span>decoder_input, encoder_output<span class="op">=</span>encoder_output))</span>
+<span id="cb32-17"><a href="architecture.html#cb32-17" aria-hidden="true" tabindex="-1"></a>    final_output <span class="op">=</span> final_layer(decoder_output)</span>
+<span id="cb32-18"><a href="architecture.html#cb32-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-19"><a href="architecture.html#cb32-19" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> Model(inputs<span class="op">=</span>[encoder_input, decoder_input], outputs<span class="op">=</span>final_output)</span></code></pre></div>
+<p>It is crucial to note that the mask on the <code>decoder_output</code> is propagated through the <code>transformer</code> model.
+The is used by the loss function, which ensures that the padding at the end of the sequences is not included in the loss calculation (but see the caveat in the Loss section). Similarly the mask is used by the metrics, in our case the accuracy metric, ignoring the padding for the metric calculation.</p>
+
+</div>
+</div>
+<h3>References<a href="references.html#references" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-layer-normalization" class="csl-entry">
+Ba, Jimmy Lei, Jamie Ryan Kiros, and Geoffrey E. Hinton. 2016. <span>“Layer Normalization.”</span> <a href="https://arxiv.org/pdf/1607.06450.pdf">https://arxiv.org/pdf/1607.06450.pdf</a>.
+</div>
+<div id="ref-weight-tying" class="csl-entry">
+Press, Ofir, and Lior Wolf. 2016. <span>“Using the Output Embedding to Improve Language Models.”</span> <em>CoRR</em> abs/1608.05859. <a href="http://arxiv.org/abs/1608.05859">http://arxiv.org/abs/1608.05859</a>.
+</div>
+<div id="ref-attention" class="csl-entry">
+Vaswani, Ashish, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones, Aidan N. Gomez, Lukasz Kaiser, and Illia Polosukhin. 2017. <span>“Attention Is All You Need.”</span> <em>CoRR</em> abs/1706.03762. <a href="http://arxiv.org/abs/1706.03762">http://arxiv.org/abs/1706.03762</a>.
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="data.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="model.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"whatsapp": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": null,
+"text": null
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": null,
+"search": {
+"engine": "fuse",
+"options": null
+},
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

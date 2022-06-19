@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Chapter 4 Model Usage | Transformer Implementation with the High-Level Keras API</title>
+  <meta name="description" content="This is an transformer implementation from scratch using the Keras API." />
+  <meta name="generator" content="bookdown 0.26 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Chapter 4 Model Usage | Transformer Implementation with the High-Level Keras API" />
+  <meta property="og:type" content="book" />
+  
+  <meta property="og:description" content="This is an transformer implementation from scratch using the Keras API." />
+  <meta name="github-repo" content="rstudio/bookdown-demo" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Chapter 4 Model Usage | Transformer Implementation with the High-Level Keras API" />
+  
+  <meta name="twitter:description" content="This is an transformer implementation from scratch using the Keras API." />
+  
+
+<meta name="author" content="James Hirschorn" />
+
+
+<meta name="date" content="2021-06-22" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="architecture.html"/>
+<link rel="next" href="references.html"/>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+
+
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<style type="text/css">
+/* Used with Pandoc 2.11+ new --citeproc when CSL is used */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}
+</style>
+
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li class="chapter" data-level="1" data-path="implementation.html"><a href="implementation.html"><i class="fa fa-check"></i><b>1</b> Transformer Implementation</a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="implementation.html"><a href="implementation.html#requirements"><i class="fa fa-check"></i><b>1.1</b> Requirements</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="data.html"><a href="data.html"><i class="fa fa-check"></i><b>2</b> Data</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="data.html"><a href="data.html#tokenizers"><i class="fa fa-check"></i><b>2.1</b> Tokenizers</a></li>
+<li class="chapter" data-level="2.2" data-path="data.html"><a href="data.html#data-pipeline"><i class="fa fa-check"></i><b>2.2</b> Data Pipeline</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="architecture.html"><a href="architecture.html"><i class="fa fa-check"></i><b>3</b> Transformer Architecture</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="architecture.html"><a href="architecture.html#embeddings"><i class="fa fa-check"></i><b>3.1</b> Embeddings</a></li>
+<li class="chapter" data-level="3.2" data-path="architecture.html"><a href="architecture.html#masking"><i class="fa fa-check"></i><b>3.2</b> Masking</a></li>
+<li class="chapter" data-level="3.3" data-path="architecture.html"><a href="architecture.html#positional-encodings"><i class="fa fa-check"></i><b>3.3</b> Positional Encodings</a></li>
+<li class="chapter" data-level="3.4" data-path="architecture.html"><a href="architecture.html#transformer-sublayers"><i class="fa fa-check"></i><b>3.4</b> Transformer Sublayers</a></li>
+<li class="chapter" data-level="3.5" data-path="architecture.html"><a href="architecture.html#attention"><i class="fa fa-check"></i><b>3.5</b> Attention</a>
+<ul>
+<li class="chapter" data-level="3.5.1" data-path="architecture.html"><a href="architecture.html#scaled-dot-product-attention"><i class="fa fa-check"></i><b>3.5.1</b> Scaled Dot-Product Attention</a></li>
+<li class="chapter" data-level="3.5.2" data-path="architecture.html"><a href="architecture.html#attention-layer"><i class="fa fa-check"></i><b>3.5.2</b> Attention Layer</a></li>
+</ul></li>
+<li class="chapter" data-level="3.6" data-path="architecture.html"><a href="architecture.html#feed-forward-networks"><i class="fa fa-check"></i><b>3.6</b> Feed-Forward Networks</a></li>
+<li class="chapter" data-level="3.7" data-path="architecture.html"><a href="architecture.html#encoder"><i class="fa fa-check"></i><b>3.7</b> Encoder</a>
+<ul>
+<li class="chapter" data-level="3.7.1" data-path="architecture.html"><a href="architecture.html#encoder-layer"><i class="fa fa-check"></i><b>3.7.1</b> Encoder Layer</a></li>
+</ul></li>
+<li class="chapter" data-level="3.8" data-path="architecture.html"><a href="architecture.html#decoder"><i class="fa fa-check"></i><b>3.8</b> Decoder</a>
+<ul>
+<li class="chapter" data-level="3.8.1" data-path="architecture.html"><a href="architecture.html#decoder-layer"><i class="fa fa-check"></i><b>3.8.1</b> Decoder Layer</a></li>
+</ul></li>
+<li class="chapter" data-level="3.9" data-path="architecture.html"><a href="architecture.html#transformer-model"><i class="fa fa-check"></i><b>3.9</b> Transformer Model</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="model.html"><a href="model.html"><i class="fa fa-check"></i><b>4</b> Model Usage</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="model.html"><a href="model.html#training"><i class="fa fa-check"></i><b>4.1</b> Training</a>
+<ul>
+<li class="chapter" data-level="4.1.1" data-path="model.html"><a href="model.html#loss"><i class="fa fa-check"></i><b>4.1.1</b> Loss</a></li>
+<li class="chapter" data-level="4.1.2" data-path="model.html"><a href="model.html#optimization"><i class="fa fa-check"></i><b>4.1.2</b> Optimization</a></li>
+<li class="chapter" data-level="4.1.3" data-path="model.html"><a href="model.html#learning"><i class="fa fa-check"></i><b>4.1.3</b> Learning</a></li>
+</ul></li>
+<li class="chapter" data-level="4.2" data-path="model.html"><a href="model.html#inference"><i class="fa fa-check"></i><b>4.2</b> Inference</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Transformer Implementation with the High-Level Keras API</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="model" class="section level1 hasAnchor" number="4">
+<h1><span class="header-section-number">Chapter 4</span> Model Usage<a href="model.html#model" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p>Since the transformer model constructed here conforms to the Keras API guidelines, we can naturally use the built-in APIs for training and inference.</p>
+<div id="training" class="section level2 hasAnchor" number="4.1">
+<h2><span class="header-section-number">4.1</span> Training<a href="model.html#training" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="loss" class="section level3 hasAnchor" number="4.1.1">
+<h3><span class="header-section-number">4.1.1</span> Loss<a href="model.html#loss" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>One of the trickiest aspects of the implementation was getting the loss right. This is one place where the disadvantages of using the higher-level Keras API show up: Less control and less clarity about what is going on behind the scenes. It took some time to notice that losses compiled into the Keras model use the propagated mask to modify the loss calculation as wanted, but do not make the expected/desired reduction afterwards. We expected that simply compiling the built-in <code>SparseCategoricalCrossentropy</code> loss into the model would give the correct loss. The compiled losses use the mask on the model output to correctly mask out the losses for irrelevant sequence members, i.e. it zeros the losses corresponding to sequence padding; however, the average is then computed over the entire sequence.
+For example, if a batch has dimension <code>(64, 37)</code>, then while the <code>64 * 37</code> loss matrix will have <code>0</code>s where there is padding, the final loss is calculated by summing the loss matrix and then calculating the mean by dividing by <code>64 * 37</code>. However, to correctly calculate the summarized loss we want to divide by the number of non-masked elements in the batch. While the transformer still learns reasonably well with this built-in loss calculation, is does significantly better with the correct loss.</p>
+<p>We could not see anyway to opt out of this behaviour, short of removing the mask from the final output which is a hack and causes the built-in metrics to give incorrect results. To overcome this we added the following “correction factor” to a custom loss, which is also a hack. From <code>transformer/loss.py</code>:</p>
+<div class="sourceCode" id="cb33"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb33-1"><a href="model.html#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> tensorflow.keras.losses <span class="im">import</span> Loss, sparse_categorical_crossentropy</span>
+<span id="cb33-2"><a href="model.html#cb33-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-3"><a href="model.html#cb33-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-4"><a href="model.html#cb33-4" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> MaskedSparseCategoricalCrossentropy(Loss):</span>
+<span id="cb33-5"><a href="model.html#cb33-5" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, name<span class="op">=</span><span class="st">&#39;masked_sparse_categorical_cross_entropy&#39;</span>):</span>
+<span id="cb33-6"><a href="model.html#cb33-6" aria-hidden="true" tabindex="-1"></a>        <span class="bu">super</span>().<span class="fu">__init__</span>(name<span class="op">=</span>name)</span>
+<span id="cb33-7"><a href="model.html#cb33-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-8"><a href="model.html#cb33-8" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> call(<span class="va">self</span>, y_true, y_pred):</span>
+<span id="cb33-9"><a href="model.html#cb33-9" aria-hidden="true" tabindex="-1"></a>        loss <span class="op">=</span> sparse_categorical_crossentropy(y_true, y_pred,</span>
+<span id="cb33-10"><a href="model.html#cb33-10" aria-hidden="true" tabindex="-1"></a>                                               from_logits<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb33-11"><a href="model.html#cb33-11" aria-hidden="true" tabindex="-1"></a>        mask <span class="op">=</span> <span class="bu">getattr</span>(y_pred, <span class="st">&#39;_keras_mask&#39;</span>)</span>
+<span id="cb33-12"><a href="model.html#cb33-12" aria-hidden="true" tabindex="-1"></a>        sw <span class="op">=</span> tf.cast(mask, y_pred.dtype)</span>
+<span id="cb33-13"><a href="model.html#cb33-13" aria-hidden="true" tabindex="-1"></a>        <span class="co"># desired loss value</span></span>
+<span id="cb33-14"><a href="model.html#cb33-14" aria-hidden="true" tabindex="-1"></a>        reduced_loss <span class="op">=</span> tf.reduce_sum(loss <span class="op">*</span> sw) <span class="op">/</span> tf.reduce_sum(sw)</span>
+<span id="cb33-15"><a href="model.html#cb33-15" aria-hidden="true" tabindex="-1"></a>        <span class="co"># cannot opt out of mask corrections in the API</span></span>
+<span id="cb33-16"><a href="model.html#cb33-16" aria-hidden="true" tabindex="-1"></a>        correction_factor <span class="op">=</span> tf.reduce_sum(tf.ones(shape<span class="op">=</span>tf.shape(y_true))) <span class="op">/</span> <span class="op">\</span></span>
+<span id="cb33-17"><a href="model.html#cb33-17" aria-hidden="true" tabindex="-1"></a>                            tf.reduce_sum(sw)</span>
+<span id="cb33-18"><a href="model.html#cb33-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-19"><a href="model.html#cb33-19" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> reduced_loss <span class="op">*</span> correction_factor</span></code></pre></div>
+</div>
+<div id="optimization" class="section level3 hasAnchor" number="4.1.2">
+<h3><span class="header-section-number">4.1.2</span> Optimization<a href="model.html#optimization" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p><strong><code>transformer/schedule.py</code></strong></p>
+<div class="sourceCode" id="cb34"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb34-1"><a href="model.html#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> tensorflow.keras.optimizers.schedules <span class="im">import</span> LearningRateSchedule</span>
+<span id="cb34-2"><a href="model.html#cb34-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-3"><a href="model.html#cb34-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-4"><a href="model.html#cb34-4" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> CustomSchedule(LearningRateSchedule):</span>
+<span id="cb34-5"><a href="model.html#cb34-5" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, d_model, warmup_steps<span class="op">=</span><span class="dv">4000</span>):</span>
+<span id="cb34-6"><a href="model.html#cb34-6" aria-hidden="true" tabindex="-1"></a>        <span class="bu">super</span>(CustomSchedule, <span class="va">self</span>).<span class="fu">__init__</span>()</span>
+<span id="cb34-7"><a href="model.html#cb34-7" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.d_model <span class="op">=</span> tf.cast(d_model, tf.float32)</span>
+<span id="cb34-8"><a href="model.html#cb34-8" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.warmup_steps <span class="op">=</span> warmup_steps</span>
+<span id="cb34-9"><a href="model.html#cb34-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-10"><a href="model.html#cb34-10" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__call__</span>(<span class="va">self</span>, step):</span>
+<span id="cb34-11"><a href="model.html#cb34-11" aria-hidden="true" tabindex="-1"></a>        arg1 <span class="op">=</span> tf.math.rsqrt(step)</span>
+<span id="cb34-12"><a href="model.html#cb34-12" aria-hidden="true" tabindex="-1"></a>        arg2 <span class="op">=</span> step <span class="op">*</span> (<span class="va">self</span>.warmup_steps <span class="op">**</span> <span class="op">-</span><span class="fl">1.5</span>)</span>
+<span id="cb34-13"><a href="model.html#cb34-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-14"><a href="model.html#cb34-14" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> tf.math.rsqrt(<span class="va">self</span>.d_model) <span class="op">*</span> tf.math.minimum(arg1, arg2)</span></code></pre></div>
+<p>The <code>Adam</code> optimizer is used with the same settings as in the paper <span class="citation">Vaswani et al. (<a href="#ref-attention" role="doc-biblioref">2017</a>)</span>.</p>
+<div class="sourceCode" id="cb35"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb35-1"><a href="model.html#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> tensorflow.keras.optimizers <span class="im">import</span> Adam</span>
+<span id="cb35-2"><a href="model.html#cb35-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-3"><a href="model.html#cb35-3" aria-hidden="true" tabindex="-1"></a>D_MODEL <span class="op">=</span> <span class="dv">128</span></span>
+<span id="cb35-4"><a href="model.html#cb35-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-5"><a href="model.html#cb35-5" aria-hidden="true" tabindex="-1"></a>learning_rate <span class="op">=</span> CustomSchedule(d_model<span class="op">=</span>D_MODEL)</span>
+<span id="cb35-6"><a href="model.html#cb35-6" aria-hidden="true" tabindex="-1"></a>optimizer <span class="op">=</span> Adam(learning_rate, beta_1<span class="op">=</span><span class="fl">0.9</span>, beta_2<span class="op">=</span><span class="fl">0.98</span>, epsilon<span class="op">=</span><span class="fl">1e-9</span>)</span></code></pre></div>
+</div>
+<div id="learning" class="section level3 hasAnchor" number="4.1.3">
+<h3><span class="header-section-number">4.1.3</span> Learning<a href="model.html#learning" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>The actual code is in <code>program.py</code>. However, the following sequence illustrates how the Keras training API
+is called.</p>
+<div class="sourceCode" id="cb36"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb36-1"><a href="model.html#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> transformer.transformer <span class="im">import</span> transformer</span>
+<span id="cb36-2"><a href="model.html#cb36-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-3"><a href="model.html#cb36-3" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> transformer(num_layers<span class="op">=</span><span class="dv">4</span>, d_model<span class="op">=</span>D_MODEL, </span>
+<span id="cb36-4"><a href="model.html#cb36-4" aria-hidden="true" tabindex="-1"></a>                    num_heads<span class="op">=</span><span class="dv">8</span>, dff<span class="op">=</span><span class="dv">512</span>,</span>
+<span id="cb36-5"><a href="model.html#cb36-5" aria-hidden="true" tabindex="-1"></a>                    input_vocab_size<span class="op">=</span>input_vocab_size,</span>
+<span id="cb36-6"><a href="model.html#cb36-6" aria-hidden="true" tabindex="-1"></a>                    target_vocab_size<span class="op">=</span>target_vocab_size,</span>
+<span id="cb36-7"><a href="model.html#cb36-7" aria-hidden="true" tabindex="-1"></a>                    pe_input_max<span class="op">=</span>MAX_LEN,</span>
+<span id="cb36-8"><a href="model.html#cb36-8" aria-hidden="true" tabindex="-1"></a>                    pe_target_max<span class="op">=</span>MAX_LEN,</span>
+<span id="cb36-9"><a href="model.html#cb36-9" aria-hidden="true" tabindex="-1"></a>                    dropout_rate<span class="op">=</span><span class="fl">0.1</span>)</span>
+<span id="cb36-10"><a href="model.html#cb36-10" aria-hidden="true" tabindex="-1"></a>                    </span>
+<span id="cb36-11"><a href="model.html#cb36-11" aria-hidden="true" tabindex="-1"></a>model.<span class="bu">compile</span>(optimizer<span class="op">=</span>optimizer,</span>
+<span id="cb36-12"><a href="model.html#cb36-12" aria-hidden="true" tabindex="-1"></a>              loss<span class="op">=</span>MaskedSparseCategoricalCrossentropy(),</span>
+<span id="cb36-13"><a href="model.html#cb36-13" aria-hidden="true" tabindex="-1"></a>              metrics<span class="op">=</span>[<span class="st">&#39;accuracy&#39;</span>])</span>
+<span id="cb36-14"><a href="model.html#cb36-14" aria-hidden="true" tabindex="-1"></a>              </span>
+<span id="cb36-15"><a href="model.html#cb36-15" aria-hidden="true" tabindex="-1"></a>model_checkpoint_callback <span class="op">=</span> tf.keras.callbacks.ModelCheckpoint(</span>
+<span id="cb36-16"><a href="model.html#cb36-16" aria-hidden="true" tabindex="-1"></a>    TRAIN_DIR <span class="op">+</span> <span class="st">&#39;/checkpoint.</span><span class="sc">{epoch}</span><span class="st">.ckpt&#39;</span>,</span>
+<span id="cb36-17"><a href="model.html#cb36-17" aria-hidden="true" tabindex="-1"></a>    save_weights_only<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb36-18"><a href="model.html#cb36-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-19"><a href="model.html#cb36-19" aria-hidden="true" tabindex="-1"></a>model.fit(data_train, epochs<span class="op">=</span><span class="dv">1</span>, validation_data<span class="op">=</span>data_eval,   </span>
+<span id="cb36-20"><a href="model.html#cb36-20" aria-hidden="true" tabindex="-1"></a>          callbacks<span class="op">=</span>model_checkpoint_callback)</span></code></pre></div>
+</div>
+</div>
+<div id="inference" class="section level2 hasAnchor" number="4.2">
+<h2><span class="header-section-number">4.2</span> Inference<a href="model.html#inference" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Inference with the transformer, or any auto-regressive model, is not simply a matter of plugging a testing pipeline into the model and calling <code>predict</code>. The training process uses teacher forcing as previously discussed, which means the next symbol is predicted based on the given ground truth up to that point in the sequence. In contrast, during inference the sequence of predicted symbols is used to recursively predict the next symbol. The code for doing this is in <code>transformer/autoregression.py</code>:</p>
+<div class="sourceCode" id="cb37"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb37-1"><a href="model.html#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> autoregress(model, <span class="bu">input</span>, delimiters, max_length):</span>
+<span id="cb37-2"><a href="model.html#cb37-2" aria-hidden="true" tabindex="-1"></a>    delimiters <span class="op">=</span> delimiters[<span class="dv">0</span>]</span>
+<span id="cb37-3"><a href="model.html#cb37-3" aria-hidden="true" tabindex="-1"></a>    decoder_input <span class="op">=</span> [delimiters[<span class="dv">0</span>]]</span>
+<span id="cb37-4"><a href="model.html#cb37-4" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb37-5"><a href="model.html#cb37-5" aria-hidden="true" tabindex="-1"></a>    output <span class="op">=</span> tf.expand_dims(decoder_input, <span class="dv">0</span>)</span>
+<span id="cb37-6"><a href="model.html#cb37-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-7"><a href="model.html#cb37-7" aria-hidden="true" tabindex="-1"></a>    done <span class="op">=</span> <span class="va">False</span></span>
+<span id="cb37-8"><a href="model.html#cb37-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">while</span> <span class="kw">not</span> done:</span>
+<span id="cb37-9"><a href="model.html#cb37-9" aria-hidden="true" tabindex="-1"></a>        preds <span class="op">=</span> model({<span class="st">&#39;encoder_input&#39;</span>: tf.expand_dims(<span class="bu">input</span>, <span class="dv">0</span>), <span class="st">&#39;decoder_input&#39;</span>: output})</span>
+<span id="cb37-10"><a href="model.html#cb37-10" aria-hidden="true" tabindex="-1"></a>        prediction <span class="op">=</span> preds[:, <span class="op">-</span><span class="dv">1</span>, :]</span>
+<span id="cb37-11"><a href="model.html#cb37-11" aria-hidden="true" tabindex="-1"></a>        pred_id <span class="op">=</span> tf.argmax(prediction, axis<span class="op">=-</span><span class="dv">1</span>) <span class="op">\</span></span>
+<span id="cb37-12"><a href="model.html#cb37-12" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> tf.shape(output)[<span class="dv">1</span>] <span class="op">&lt;</span> max_length <span class="op">-</span> <span class="dv">1</span> <span class="cf">else</span> tf.expand_dims(delimiters[<span class="dv">1</span>], <span class="dv">0</span>)</span>
+<span id="cb37-13"><a href="model.html#cb37-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-14"><a href="model.html#cb37-14" aria-hidden="true" tabindex="-1"></a>        done <span class="op">=</span> pred_id <span class="op">==</span> delimiters[<span class="dv">1</span>]</span>
+<span id="cb37-15"><a href="model.html#cb37-15" aria-hidden="true" tabindex="-1"></a>        output <span class="op">=</span> tf.concat([output, tf.expand_dims(pred_id, <span class="dv">0</span>)], axis<span class="op">=-</span><span class="dv">1</span>)</span>
+<span id="cb37-16"><a href="model.html#cb37-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-17"><a href="model.html#cb37-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> tf.squeeze(output, axis<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb37-18"><a href="model.html#cb37-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-19"><a href="model.html#cb37-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-20"><a href="model.html#cb37-20" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> translate(model, <span class="bu">input</span>, tokenizers, max_length):</span>
+<span id="cb37-21"><a href="model.html#cb37-21" aria-hidden="true" tabindex="-1"></a>    <span class="co">&quot;&quot;&quot;</span></span>
+<span id="cb37-22"><a href="model.html#cb37-22" aria-hidden="true" tabindex="-1"></a><span class="co">    Translate an input sentence to a target sentence using a model</span></span>
+<span id="cb37-23"><a href="model.html#cb37-23" aria-hidden="true" tabindex="-1"></a><span class="co">    &quot;&quot;&quot;</span></span>
+<span id="cb37-24"><a href="model.html#cb37-24" aria-hidden="true" tabindex="-1"></a>    input_encoded <span class="op">=</span> tokenizers.inputs.tokenize([<span class="bu">input</span>])[<span class="dv">0</span>]</span>
+<span id="cb37-25"><a href="model.html#cb37-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-26"><a href="model.html#cb37-26" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="bu">len</span>(input_encoded) <span class="op">&gt;</span> max_length:</span>
+<span id="cb37-27"><a href="model.html#cb37-27" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="va">None</span></span>
+<span id="cb37-28"><a href="model.html#cb37-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-29"><a href="model.html#cb37-29" aria-hidden="true" tabindex="-1"></a>    prediction <span class="op">=</span> autoregress(model, </span>
+<span id="cb37-30"><a href="model.html#cb37-30" aria-hidden="true" tabindex="-1"></a>                             input_encoded, </span>
+<span id="cb37-31"><a href="model.html#cb37-31" aria-hidden="true" tabindex="-1"></a>                             delimiters<span class="op">=</span>tokenizers.targets.tokenize([<span class="st">&#39;&#39;</span>]),</span>
+<span id="cb37-32"><a href="model.html#cb37-32" aria-hidden="true" tabindex="-1"></a>                             max_length<span class="op">=</span>max_length)</span>
+<span id="cb37-33"><a href="model.html#cb37-33" aria-hidden="true" tabindex="-1"></a>    prediction_decoded <span class="op">=</span> tokenizers.targets.detokenize([prediction]).numpy()[<span class="dv">0</span>][<span class="dv">0</span>].decode(<span class="st">&#39;utf-8&#39;</span>)</span>
+<span id="cb37-34"><a href="model.html#cb37-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-35"><a href="model.html#cb37-35" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> prediction_decoded</span></code></pre></div>
+
+</div>
+</div>
+<h3>References<a href="references.html#references" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-attention" class="csl-entry">
+Vaswani, Ashish, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones, Aidan N. Gomez, Lukasz Kaiser, and Illia Polosukhin. 2017. <span>“Attention Is All You Need.”</span> <em>CoRR</em> abs/1706.03762. <a href="http://arxiv.org/abs/1706.03762">http://arxiv.org/abs/1706.03762</a>.
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="architecture.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="references.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"whatsapp": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": null,
+"text": null
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": null,
+"search": {
+"engine": "fuse",
+"options": null
+},
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>
