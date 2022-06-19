@@ -12,4 +12,10 @@ github-repo: rstudio/bookdown-demo
 description: "This is an transformer implementation from scratch using the Keras API."
 ---
 
+\newcommand{\reals}{\mathbb R}
+\newcommand{\dmodel}{d_{\mathrm{model}}}
+\newcommand{\Th}{{^{\mathrm{th}}}}
+\newcommand{\espc}{\quad}
+\renewcommand{\div}{\mathbin{/}}
+
 <!-- # Prerequisites -->
