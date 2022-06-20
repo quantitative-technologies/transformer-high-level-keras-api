@@ -5,7 +5,15 @@ output:
     includes:
       #in_header: "macros.tex"
   #bookdown::html_book:
-delete_merged_file: true
+delete_merged_file: false
 
-rmd_files: ['transformer.Rmd']
+#rmd_files: ['transformer.Rmd']
+rmd_files: [
+  'index.Rmd',
+  '01-implementation.Rmd',
+  '02-data.Rmd',
+  '03-architecture.Rmd',
+  '04-model.Rmd',
+  '05-references.Rmd'
+  ]
 ---
