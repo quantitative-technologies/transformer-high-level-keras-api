@@ -4,6 +4,9 @@ language:
 delete_merged_file: true
 
 output_dir: "../docs"
+site: "bookdown::bookdown_site"
+output:
+  bookdown::html_book: default
 rmd_files: [
   'index.Rmd',
   '01-implementation.Rmd',

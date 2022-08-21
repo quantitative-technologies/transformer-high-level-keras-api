@@ -33,12 +33,15 @@ show_python_output <- function(py_output, width = 80) {
 }
 show_python_output(py$example1_output)
 ```
-## Tokenizers
+
+## Tokenizers {#tokenizers}
 
 As usual for language modeling, sentences in some language must be converted to sequences of integers in order to serve as input for a neural network, in a process called *tokenization*.
-The input sentences are tokenized using the class `SubwordTokenizer` in the script `tokenizer/subword_tokenizer.py`. It is closely based on the `CustomTokenizer` class from the [Subword tokenizer tutorial](https://www.tensorflow.org/text/guide/subwords_tokenizer "Subword tokenizers") which is in turn based on the `BertTokenizer` from `tensorflow_text`. 
+The input sentences are tokenized using the class `SubwordTokenizer` in the script `r py_anchor('tokenizer/subword_tokenizer.py')`. It is closely based on the `CustomTokenizer` class from the [Subword tokenizer tutorial](https://www.tensorflow.org/text/guide/subwords_tokenizer "Subword tokenizers") which is in turn based on the `BertTokenizer` from `tensorflow_text`. 
 
-The script `prepare_tokenizers.py` provides the `prepare_tokenizers` function which builds a pair of `SubwordTokenizer`s from the input examples and saves them to disk for later reuse, as they take some time to build. The parameters below indicate that all text is converted to lowercase and that the maximum vocabulary size of both the inputs and targets is $2^{13} = `r 2 ** 13`$.
+From the tutorial: "The main advantage of a subword tokenizer is that it interpolates between word-based and character-based tokenization. Common words get a slot in the vocabulary, but the tokenizer can fall back to word pieces and individual characters for unknown words." `SubwordTokenizer` takes a sentence and first splits it into words using BERT's token splitting algorithm and then applies a subword tokenizer using the [WordPiece algorithm](https://www.tensorflow.org/text/guide/subwords_tokenizer#applying_wordpiece).
+
+The script `r py_anchor('prepare_tokenizers.py')` provides the `prepare_tokenizers` function which builds a pair of `SubwordTokenizer`s from the input examples and saves them to disk for later reuse, as they take some time to build. The parameters below indicate that all text is converted to lowercase and that the maximum vocabulary size of both the inputs and targets is $2^{13} = `r 2 ** 13`$.
 
 ```{python create-tokenizers}
 from prepare_tokenizers import prepare_tokenizers
@@ -133,7 +136,7 @@ while `targets` is the tokenized target sentence lagged by one for autoregressio
 
 The input pipeline encapsulated in our `Dataset` class follows the [TensorFlow Data Pipeline Performance Guide](https://www.tensorflow.org/guide/data_performance "Better performance with the tf.data API"):
 
-**`transformer/dataset.py`**
+**`r py_anchor('transformer/dataset.py')`**
 ```{python dataset.py, code=readLines(file.path(python_working_dir, 'transformer', 'dataset.py')), cache=TRUE}
 ```
 

@@ -11,28 +11,11 @@ Using a high-level API makes the learning process more straightforward and the c
 
 While the primary emphasis is on implementation, we also give our own in depth explanation of the transformer model. 
 
+The root directory for the `python` code is the  `inst/python` subdirectory of the GitHub repository for [this project](`r git_url` "GitHub repository"). 
+
 ## Requirements
 
-This library requires TensorFlow version 2.5.0. It *may* work on newer versions as well, and we have tested it on the version 2.6 development branch. The full requirements are listed in `inst/python/requirements.txt`. 
-
-Please note the root directory for the actual `python` code is `inst/python`. 
-
-```{r setup, include=FALSE, eval=TRUE}
-knitr::opts_chunk$set(echo = TRUE)
-# FIX THIS!!!
-python_working_dir <- here::here('inst/python')
-knitr::opts_knit$set(root.dir = python_working_dir)
-knitr::opts_knit$set(width = 80)
-library(reticulate)
-PATH_v <- Sys.getenv('PATH')
-HOME_v <- Sys.getenv('HOME')
-Sys.setenv(PATH = paste(PATH_v, paste(HOME_v, '.local/bin', sep = '/'), sep = ':'))
-system("pip install pipenv")
-system("pipenv --python 3.9")
-venv <- system("pipenv --venv", inter = TRUE)
-use_virtualenv(venv, required = TRUE)
-py_config()
-```
+This library requires TensorFlow version 2.5.0. It *may* work on newer versions as well, and we have tested it on the version 2.6 development branch. The full requirements are listed in [`inst/python/requirements.txt`](`r py_link('requirements.txt')`), which was used to prepare an environment to run the `python` code presented here.
 
 ```{python requirements, include=FALSE}
 import os

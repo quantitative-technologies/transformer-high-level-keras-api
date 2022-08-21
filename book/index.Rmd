@@ -18,4 +18,38 @@ description: "This is an transformer implementation from scratch using the Keras
 \newcommand{\espc}{\quad}
 \renewcommand{\div}{\mathbin{/}}
 
+
+```{r setup, include=FALSE, eval=TRUE}
+knitr::opts_chunk$set(echo = TRUE)
+git_url <- 'https://github.com/quantitative-technologies/transformer-high-level-keras-api/'
+blob_url <- paste0(git_url, 'blob/master/')
+blob_py_url <- paste0(blob_url, 'inst/python/')
+py_link <- function(path) {
+  paste0(blob_py_url, path)
+}
+py_anchor <- function(path, base_dir = NULL) {
+  link <- if (is.null(base_dir)) {
+    py_link(path)
+  } else {
+    py_link(paste(base_dir, path, sep = '/'))
+  }
+  paste0('[`', path, '`]', '(', link, ')')
+}
+# FIX THIS!!!
+python_working_dir <- here::here('inst/python')
+working_dir <- here::here('book')
+knitr::opts_knit$set(root.dir = python_working_dir)
+knitr::opts_knit$set(width = 80)
+options(knitr.graphics.error = FALSE)
+library(reticulate)
+PATH_v <- Sys.getenv('PATH')
+HOME_v <- Sys.getenv('HOME')
+Sys.setenv(PATH = paste(PATH_v, paste(HOME_v, '.local/bin', sep = '/'), sep = ':'))
+system("pip install pipenv")
+system("pipenv --python 3.9")
+venv <- system("pipenv --venv", inter = TRUE)
+use_virtualenv(venv, required = TRUE)
+py_config()
+```
+
 <!-- # Prerequisites -->

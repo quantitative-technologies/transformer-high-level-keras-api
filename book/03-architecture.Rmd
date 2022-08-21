@@ -1,10 +1,17 @@
 # Transformer Architecture {#architecture}
 
-The transformer has an encoder-decoder structure as is typical for neural sequence transduction models,
-e.g. language translation.
-The encoder encodes a sequence of tokens $(x_1,\dots,x_n)$ from the first language to a continuous representation $\mathbf z=(z_1,\dots,z_n)$ in $\dmodel$-dimensional Euclidean space, i.e. each $z_i\in\reals^{\dmodel}$. The decoder the maps this representation to a sequence of tokens $(y_1,\dots,y_m)$ auto-regressively: each symbol $y_j$ is predicted from $\mathbf z$ and the previously predicted symbols $y_1\dots,y_{j-1}$.
+```{r architecture, echo=FALSE, fig.cap="Transformer", fig.align='center'}
+#knitr::include_graphics(file.path(here::here(), "book", "transformer.png"))
+#path <- file.path(working_dir, "images", "transformer.png")
+#print(file.exists(path))
+#path2 <- '/home/user/projects/transformer-high-level-keras-api/book/images/transformer.png'
+knitr::include_graphics('images/transformer.png')
+```
+
+The transformer has an encoder-decoder structure as is typical for neural sequence transduction models, e.g. language translation. The encoder encodes a sequence of tokens $(x_1,\dots,x_n)$ from the first language to a continuous representation $\mathbf z=(z_1,\dots,z_n)$ in $\dmodel$-dimensional Euclidean space, i.e. each $z_i\in\reals^{\dmodel}$. The decoder the maps this representation to a sequence of tokens $(y_1,\dots,y_m)$ auto-regressively: each symbol $y_j$ is predicted from $\mathbf z$ and the previously predicted symbols $y_1\dots,y_{j-1}$.
 
 In all of the code snippets below, the imports are not shown but are included in the following:
+
 ```{python imports}
 import tensorflow as tf
 from tensorflow.keras import Sequential, Model
@@ -19,10 +26,9 @@ The initial layer of the both the encoder and decoder map input and output symbo
 
 ## Masking
 
-The Keras API has built in support for masking, which is used to ignore specified positions in sequential inputs. It is described for example in the [TensorFlow Keras Guide on Masking and Padding](https://www.tensorflow.org/tutorials/text/transformer "Masking and padding with Keras"). Layers that utilize masking are either mask consumers or producers, where the latter can also modify an existing mask.
-In the transformer architecture the attention layers are the mask consumers.
+The Keras API has built in support for masking, which is used to ignore specified positions in sequential inputs. It is described for example in the [TensorFlow Keras Guide on Masking and Padding](https://www.tensorflow.org/tutorials/text/transformer "Masking and padding with Keras"). Layers that utilize masking are either mask consumers or producers, where the latter can also modify an existing mask. In the transformer architecture the attention layers are the mask consumers.
 
-There are two uses for masking in the architecture. The first is the usual one for sequence models. The input sequences are padded at the end with zeros so that each batch has members of the same length. These are masked out so that, for example, the position pair $(i, j)$ has zero attention weight whenever either the $i\Th$ or the $j\Th$ position of the input is padding. We define the `PaddingMask` layer to produce these masks. In the Embeddings section it is explained why we chose not to use the Keras built-in `Embedding` mask producing layer to produce these masks.
+There are two uses for masking in the architecture. The first is the usual one for sequence models. The input sequences are padded at the end with zeros so that each batch has members of the same length. These are masked out so that, for example, the position pair $(i, j)$ has zero attention weight whenever either the $i\Th$ or the $j\Th$ position of the input is padding. We define the `PaddingMask` layer to produce these masks.
 
 ```{python padding-mask}
 _keras_mask_attr = '_keras_mask'
@@ -42,7 +48,7 @@ class PaddingMask(Layer):
         return tf.math.not_equal(inputs, self.mask_value)
 ```
 
-To implement a mask producing layer, the class member function `compute_mask` is implemented. It takes the inputs and an optional mask argument and uses them to produce a new mask. Keras stores a tensor's mask in the `_keras_mask` attribute. Notice that we remove this attribute in the `call` method. We found this to be necessary, because as we discovered TensorFlow has an efficiency "hack", where it does not produce a mask when a mask producing layer's output already has a mask. However, the `PaddingMask` simply passes its input forward which might have some preexisting mask which needs to be replaced.
+To implement a mask producing layer, the class member function `compute_mask` is implemented. It takes the inputs and an optional mask argument and uses them to produce a new mask. Keras stores a tensor's mask in the `_keras_mask` attribute. Notice that we remove this attribute in the `call` method. We found this to be necessary, because as we discovered TensorFlow has an efficiency "hack", where it does not produce a mask when a mask consuming layer's input already has a mask. However, the `PaddingMask` simply passes its input forward which might have some preexisting mask which needs to be replaced.
 
 The other use of masking is in auto-regression. During training the decoder layer uses what is called *teacher forcing* where the loss is determined by the model's output at position $i$, where it receives the decoder input sequence up to but not including position $i$. This achieved by masking in the decoder self-attention layer (see below), where positions pairs $(i, j)$ with $i<j$ are masked out. This means that the $i\Th$ query can only do lookups with the first $i$ keys (see Attention and Decoder Layer below). Without this masking there is a mismatch between the training, and what happens during inference which is necessarily auto-regressive. Indeed, we confirmed that the model outputs nonsense when trained without the auto-regressive mask.
 
@@ -77,23 +83,18 @@ class AutoRegressiveMask(Layer):
         return mask
 ```
 
-
 ## Positional Encodings
 
-An effective sequence-to-sequence models takes into account the ordering of its input sequences. For example, in the case of language translation, it should be more than just a bag of words model. Positional encodings are used to inform the model of the position of each symbol in a given input sequence. Thus the integers, representing $0$-based indices, are mapped into $\reals^{\dmodel}$. The particular encoding used here is given by the Fourier basis functions with wavelengths varying with the dimensions: An integer $p$ is mapped to $E(p)=(E(p)_0,\dots,E(p)_{\dmodel-1})$ where
-\begin{equation}
+An effective sequence-to-sequence models takes into account the ordering of its input sequences. For example, in the case of language translation, it should be more than just a bag of words model. Positional encodings are used to inform the model of the position of each symbol in a given input sequence. Thus the integers, representing $0$-based indices, are mapped into $\reals^{\dmodel}$. The particular encoding used here is given by the Fourier basis functions with wavelengths varying with the dimensions: An integer $p$ is mapped to $E(p)=(E(p)_0,\dots,E(p)_{\dmodel-1})$ where \begin{equation}
 \begin{split}
 E_{2i}(p)&=\sin(p\cdot b^{-\frac{2i}{\dmodel}}),\\
 E_{2i+1}(p)&=\cos(p\cdot b^{-\frac{2i}{\dmodel}}),
 \end{split}
-\end{equation}
-where $b$ is the base of the encoding. The wavelengths $\theta_i=2\pi\cdot b^{\frac{2i}{\dmodel}}$ form a geometric progression from $2\pi$ to $2b\pi$ (noninclusive). The $2i\Th$ dimension contains the $\sin$ Fourier basis functions at wavelength $\theta_i$, evaluated at $x=1$, and the $2i+1\Th$ dimension contains the $\cos$ basis functions at this wavelength. The use of varying wavelengths ensures that distant integers are dissimilar in $\dmodel$-space even though they might be very close in some dimensions. From basic properties of the Fourier basis, it follows that for each $k$ there exists a vector $\lambda_k\in\reals^{\dmodel}$ such that
-\begin{equation}
+\end{equation} where $b$ is the base of the encoding. The wavelengths $\theta_i=2\pi\cdot b^{\frac{2i}{\dmodel}}$ form a geometric progression from $2\pi$ to $2b\pi$ (noninclusive). The $2i\Th$ dimension contains the $\sin$ Fourier basis functions at wavelength $\theta_i$, evaluated at $x=1$, and the $2i+1\Th$ dimension contains the $\cos$ basis functions at this wavelength. The use of varying wavelengths ensures that distant integers are dissimilar in $\dmodel$-space even though they might be very close in some dimensions. From basic properties of the Fourier basis, it follows that for each $k$ there exists a vector $\lambda_k\in\reals^{\dmodel}$ such that \begin{equation}
 E(p+k)=\lambda_k\cdot E(p)\espc\text{for all $p$.}
-\end{equation}
-In @attention it is hypothesized that this latter property allow the model to relative position as well as actual position.
+\end{equation} In @attention it is hypothesized that this latter property allows the model to attend by relative position as well as actual position.
 
-The code for the `ScaledEmbedding` layer is displayed here, slightly simplified from the class in `embedding.py`. The `positional_encoding` function is from `positional_encoding.py` and was taken verbatim from the [TensorFlow transformer tutorial](https://www.tensorflow.org/tutorials/text/transformer "Transformer model for language understanding").
+The code for the `ScaledEmbedding` layer is displayed here, slightly simplified from the class in `r py_anchor('embedding.py', base_dir = 'transformer')`. The `positional_encoding` function is from `r py_anchor('positional_encoding.py', base_dir = 'transformer')` and was taken verbatim from the [TensorFlow transformer tutorial](https://www.tensorflow.org/tutorials/text/transformer "Transformer model for language understanding").
 
 ```{python embedding}
 class ScaledEmbedding(Layer):
@@ -116,25 +117,21 @@ class ScaledEmbedding(Layer):
         return self.dropout(x_enc, training)
 ```
 
-Custom layers that are not mask-producing, i.e. which do not modify the current input mask or create a new one, will destroy the current mask by default. Setting the `supports_masking` attribute to `True` allows the current mask to instead propagate through to the next layer unchanged. This is needed since we use `PaddingMask` before `ScaledEmbedding`, and this padding mask needs to be propagated to the encoder/decoder layers. Note that we could have used the built in `Embedding` layer to produce the padding mask, but this seemed less efficient because then we would need to add a `compute_mask` method to `ScaledEmbedding` which would then make a redundant second call to the `Embedding` just to get the mask.
+Custom layers that are not mask-producing, i.e. which do not modify the current input mask or create a new one, will destroy the current mask by default. Setting the `supports_masking` attribute to `True` allows the current mask to instead propagate through to the next layer unchanged. This is needed since we use `PaddingMask` before `ScaledEmbedding`, and this padding mask needs to be propagated to the encoder/decoder layers.
 
 The dropout layer only has an effect during training, and for this reason our `call` method takes the optional Boolean `training` parameter to inform the `Dropout` layer. When using the Keras API for training or inference, it automatically passes the correct `training` value to all of its layers (including `ScaledEmbedding`). In fact, we do not even have to use the `training` parameter because the API will automatically pass the correct value to the dropout layer. However, we include it so that our custom `ScaledEmbededing` can also be used properly independently of the Keras API.
 
 ## Transformer Sublayers
 
-The transformer architecture contains only attention sublayers and simple feed-forward sublayers: "Attention is all you need".
-Every sublayer in the transformer has a residual connection followed by Layer Normalization, which standardizes the output so that each sample has mean 0 and variance 1, as opposed to Batch Normalization which standardizes across the whole batch.
+The transformer architecture contains only attention sublayers and simple feed-forward sublayers: "Attention is all you need". Every sublayer in the transformer has a residual connection followed by Layer Normalization, which standardizes the output so that each sample has mean 0 and variance 1, as opposed to Batch Normalization which standardizes across the whole batch.
 
-Residual connections avoid the problem of vanishing gradients, but more importantly avoid the *Degradation problem* where adding additional layers degrade accuracy even on the training set (so not due to overtraining). They are introduced in [Deep Residual Learning for Image Recognition](https://openaccess.thecvf.com/content_cvpr_2016/papers/He_Deep_Residual_Learning_CVPR_2016_paper.pdf "Open Access").
+Residual connections avoid the problem of vanishing gradients, but more importantly avoid the *Degradation problem* where adding additional layers degrade accuracy even on the training set (so not due to overtraining). They are introduced in @he_deep_2016.
 
-In general, mean/variance normalization speeds up stochastic gradient descent by creating a more symmetric error surface and also alleviates vanishing/exploding gradients in multilayer networks. *Batch Normalization* (BN) is a milestone technique, where the normalization is taken for each neuron over the input batch.
-BN is problematic for sequential models such as transformers, where the batch samples have differing sequence lengths. In @layer-normalization, the alternative *Layer Normalization* is introduced where the normalization is over each layer instead of neuron, but is taken one sample at a time avoiding the issue with differing sequence lengths. See also [Group Normalization](https://arxiv.org/pdf/1803.08494.pdf "Group Normalization") for more on generalizing Batch Normalization.
+In general, mean/variance normalization speeds up stochastic gradient descent by creating a more symmetric error surface and also alleviates vanishing/exploding gradients in multilayer networks. *Batch Normalization* (BN) is a milestone technique, where the normalization is taken for each neuron over the input batch. BN is problematic for sequential models such as transformers, where the batch samples have differing sequence lengths. In @layer-normalization, the alternative *Layer Normalization* is introduced where the normalization is over each layer instead of neuron, but is taken one sample at a time avoiding the issue with differing sequence lengths. See also *Group Normalization*, @wu_group_2020 for more on generalizing Batch Normalization.
 
+Given an input $x$, and possibly additional inputs $...$, the output is then\linebreak $\operatorname{LayerNorm}(x + \operatorname{SubLayer}(x, ...))$ where $\operatorname{SubLayer}(x, ...)$ is the output of either an attention or feed-forward sublayer. In order to facilitate the residual connections, the output of each layer, including the embedding layers, must have the same dimension $\dmodel$. The original paper used $\dmodel=512$ dimensions, while we used $\dmodel=128$.
 
-Given an input $x$, and possibly additional inputs $...$, the output is then\linebreak $\operatorname{LayerNorm}(x + \operatorname{SubLayer}(x, ...))$ where $\operatorname{SubLayer}(x, ...)$
-is the output of either an attention or feed-forward sublayer. In order to facilitate the residual connections, the output of each layer, including the embedding layers, must have the same dimension $\dmodel$. The original paper used $\dmodel=512$ dimensions, while we used $\dmodel=128$.
-
-The transformer sublayer is implemented in `sublayer.py`.
+The transformer sublayer is implemented in `r py_anchor('sublayer.py', base_dir = 'transformer')`.
 
 ```{python transformer-sublayer}
 class TransformerSubLayer(Layer):
@@ -168,23 +165,22 @@ class TransformerSubLayer(Layer):
         return mask
 ```
 
-The `input_layer` parameter is an TensorFlow `Layer` (in its use for the transformer this is either an attention sublayer or a feed-forward sublayer). The `inputs` to the `call` function are passed to this `input_layer`, and can be either a TensorFlow tensor or a `dict` mapping names to tensors in the case of multiple inputs. In the latter case, `input_key` indicates which member of the `dict` is the primary input to be used in the residual connection; and also the input masks are modified so that only the mask relevant to the output is returned.
+The `input_sublayer` parameter is a TensorFlow `Layer` (in its use for the transformer this is either an attention sublayer or a feed-forward sublayer). The `inputs` to the `call` function are passed to this `input_layer`, and can be either a TensorFlow tensor or a `dict` mapping names to tensors in the case of multiple inputs. In the latter case, `input_key` indicates which member of the `dict` is the primary input to be used in the residual connection; and also the input masks are modified so that only the mask relevant to the output is returned.
 
 ## Attention
 
 ### Scaled Dot-Product Attention
 
-Given $n_k$ keys of dimension $d_k$ and $n_v=n_k$ values of dimension $d_v$, packed into an $n_k\times d_k$ matrix $K$ and an $n_k\times d_v$ matrix $V$, respectively, along with $n_q$ queries of dimension $d_q=d_k$ packed as $Q$, the attention function outputs the following $n_q\times d_v$ matrix:
+Given $n_k$ keys of dimension $d_k$ and $n_v=n_k$ values of dimension $d_v$, packed into an $n_k\times d_k$ matrix $K$ and an $n_k\times d_v$ matrix $V$, respectively, along with $n_q$ queries of dimension $d_q=d_k$ packed as $Q$, the attention function outputs the following $n_q\times d_v$ matrix:  
 \begin{equation}
   \textrm{Attention}(Q,K,V)=\textrm{softmax}\left(\frac{QK^\top}{\sqrt{d_k}}\right)V,
     (\#eq:attention)
-\end{equation}
-where the $\mathrm{softmax}$ is rowwise, so that the rows are probability distributions, forming an $n_q\times n_k$ matrix of *attention weights*. Thus the $i^\mathrm{th}$ row of the attention weight matrix gives a probability distribution (i.e. weights) over the values used to resolve the $i^\mathrm{th}$ query,
-where each weight is determined by the compatibility of the query with the corresponding key.
+\end{equation} 
+where the $\mathrm{softmax}$ is rowwise, so that the rows are probability distributions, forming an $n_q\times n_k$ matrix of *attention weights*. Thus the $i^\mathrm{th}$ row of the attention weight matrix gives a probability distribution (i.e. weights) over the values used to resolve the $i^\mathrm{th}$ query, where each weight is determined by the compatibility of the query with the corresponding key.
 
 In the case of sequence-to-sequence models, the $i^\mathrm{th}$ query corresponds to the $i^\mathrm{th}$ position of the input sequence and the $j^\mathrm{th}$ key/value pair corresponds to the $j^\mathrm{th}$ position of the target sequence, so that the attention mechanism determines how much weight is given to this pair in the output.
 
-In `attention.py`, we use nearly same code as in [TensorFlow transformer tutorial](https://www.tensorflow.org/tutorials/text/transformer "Transformer model for language understanding") to implement the scaled dot-product attention in \@ref(eq:attention), generalized to tensors and including masking, except that the `mask` parameter is a Boolean tensor (one Boolean value per timestep in the input) used to skip certain input timesteps when processing timeseries data.
+In `r py_anchor('attention.py', base_dir = 'transformer')`, we use nearly same code as in [TensorFlow transformer tutorial](https://www.tensorflow.org/tutorials/text/transformer "Transformer model for language understanding") to implement the scaled dot-product attention in \@ref(eq:attention), generalized to tensors and including masking, except that the `mask` parameter is a Boolean tensor (one Boolean value per timestep in the input) used to skip certain input timesteps when processing timeseries data.
 
 ```{python, scaled-dot-product-attention}
 def scaled_dot_product_attention(q, k, v, mask):
@@ -228,14 +224,13 @@ def scaled_dot_product_attention(q, k, v, mask):
 
 ### Attention Layer
 
-For simplicity we present a single-head attention layer here. The actual transformer uses a multi-head attention layer in `attention.py`. It is implemented as a [custom layer](https://www.tensorflow.org/tutorials/customization/custom_layers "Custom Layer"), using the Keras [Layer subclassing API](https://www.tensorflow.org/guide/keras/custom_layers_and_models "Making new Layers and Models via subclassing").
+For simplicity we present a single-head attention layer here. The actual transformer uses a multi-head attention layer in `r py_anchor('attention.py', base_dir = 'transformer')`. It is implemented as a [custom layer](https://www.tensorflow.org/tutorials/customization/custom_layers "Custom Layer"), using the Keras [Layer subclassing API](https://www.tensorflow.org/guide/keras/custom_layers_and_models "Making new Layers and Models via subclassing").
 
-In the Keras Layer subclassing API, a custom layer is implemented as a `class` that inherits from `Layer`,
-and implements a `call` method with mandatory argument `inputs`, and "privileged" optional arguments `training` and `mask`. The API also specifies a `build` method for initialization steps which can only be performed after the input shape is known, but this does not apply to any of our layers.
+In the Keras Layer subclassing API, a custom layer is implemented as a `class` that inherits from `Layer`, and implements a `call` method with mandatory argument `inputs`, and "privileged" optional arguments `training` and `mask`. The API also specifies a `build` method for initialization steps which can only be performed after the input shape is known, but this does not apply to any of our layers.
 
 The `SingleHeadAttention` layer is a [mask consuming layer](https://www.tensorflow.org/guide/keras/masking_and_padding#writing_layers_that_need_mask_information "Writing layers that need mask information"). Thus its `call` method exposes the `mask` parameter which gets passed on to `scaled_dot_product_attention`, to indicate which position pairs $(i, j)$ in the inputs and targets to ignore.
 
-**`single_head_attention_layer.py`**
+**`r py_anchor('single_head_attention_layer.py')`**
 
 ```{python single-head-attention-layer, eval=FALSE}
 class SingleHeadAttention(Layer):
@@ -255,33 +250,24 @@ class SingleHeadAttention(Layer):
         return output, attention_weights
 ```
 
-
-This layer performs the calculation:
+This layer performs the calculation: 
 \begin{equation}
   \operatorname{SingleHeadAttention}(Q, K, V)=\operatorname{Attention}(Q, K, V)W^O,
    (\#eq:single-attention)
-\end{equation}
-where $W^O\in\mathbb R^{d_v\times d_\mathrm{model}}$ is the learned linear projection of the scaled dot-product to $d_\mathrm{model}$-space.
-Note that even though we shall always have $d_v=d_\mathrm{model}$ the projection is still important to orient the output, since it is used in calculations such as $x+\operatorname{SingleHeadAttention}(x,x,x)$ where the orientation of the output becomes relevant. Indeed we verified that while the transformer still learns without the final projection, the results are substantially worse. (We did not make actual benchmarks, but simply inspected the model outputs after training for the same number of epochs in each case.)
+\end{equation} 
+where $W^O\in\mathbb R^{d_v\times d_\mathrm{model}}$ is the learned linear projection of the scaled dot-product to $d_\mathrm{model}$-space. Note that even though we shall always have $d_v=d_\mathrm{model}$ the projection is still important to orient the output, since it is used in calculations such as $x+\operatorname{SingleHeadAttention}(x,x,x)$ where the orientation of the output becomes relevant. Indeed we verified that while the transformer still learns without the final projection, the results are substantially worse. (We did not make actual benchmarks, but simply inspected the model outputs after training for the same number of epochs in each case.)
 
 #### Multi-Head Attention
 
-The multi-head attention splits the attention mechanism into $n$ separate "heads", each with their own representation of the queries, keys and values. They run in parallel, allowing the model to attend simultaneously to different position pairs in different representation spaces:
-\begin{equation}
+The multi-head attention splits the attention mechanism into $n$ separate "heads", each with their own representation of the queries, keys and values. They run in parallel, allowing the model to attend simultaneously to different position pairs in different representation spaces: \begin{equation}
   \operatorname{MultiHeadAttention}(Q, K, V)=\operatorname{Concat}(\mathrm{head}_1,\dots,\mathrm{head}_n)W^O
-\end{equation}
-where $\operatorname{Concat}$ is row-wise concatenation and
-\begin{equation}
+\end{equation} where $\operatorname{Concat}$ is row-wise concatenation and \begin{equation}
   \mathrm{head}_i=\operatorname{Attention}(Q W_i^Q, K W_i^K , V W_i^V),
-\end{equation}
-and $W_i^Q\in\reals^{\dmodel\times d_k}$, $W_i^K\in\reals^{\dmodel\times d_k}$,
-$W_i^V\in\reals^{\dmodel\times d_v}$ and $W^O\in\reals^{h d_v\times{\dmodel}}$ are projections.
+\end{equation} and $W_i^Q\in\reals^{\dmodel\times d_k}$, $W_i^K\in\reals^{\dmodel\times d_k}$, $W_i^V\in\reals^{\dmodel\times d_v}$ and $W^O\in\reals^{h d_v\times{\dmodel}}$ are projections.
 
-In transformer architecture, the representation spaces are all of dimensions $d_q=d_k=d_v=\dmodel\div h$.
-We use $h=8$ heads as in the original paper, and saw an visible improvement of the single-head architecture.
-As noted in the paper, a single-head attention cannot simultaneously attend differently in different representation subspaces. If one tries to add projections $W^Q$, $W^K$ and $W^V$ in equation \@ref(eq:single-attention), they will simply be factored out into $W^O$ and have no effect.
+In transformer architecture, the representation spaces are all of dimensions $d_q=d_k=d_v=\dmodel\div h$. We use $h=8$ heads as in the original paper, and saw an visible improvement of the single-head architecture. As noted in the paper, a single-head attention cannot simultaneously attend differently in different representation subspaces. If one tries to add projections $W^Q$, $W^K$ and $W^V$ in equation \@ref(eq:single-attention), they will simply be factored out into $W^O$ and have no effect.
 
-The code for the `MultiHeadAttention` class is in `attention.py` and is nearly the same as the corresponding class in the [official transformer tutorial](https://www.tensorflow.org/tutorials/text/transformer "Transformer model for language understanding"), except that the `call` method signature has been modified to conform with the Keras API.
+The code for the `MultiHeadAttention` class is in `r py_anchor('attention.py', base_dir = 'transformer')` and is nearly the same as the corresponding class in the [official transformer tutorial](https://www.tensorflow.org/tutorials/text/transformer "Transformer model for language understanding"), except that the `call` method signature has been modified to conform with the Keras API.
 
 #### Contextual Embeddings
 
@@ -289,9 +275,7 @@ In contrast to the embedding layers, which embed a symbol to the same vector reg
 
 ## Feed-Forward Networks
 
-Each transformer sublayer has a fully connected feed-forward network consisting of two layers with a single ReLU activation in between. The first layer has dimension $\mathrm{dff}$ which is $2048$ in the paper, while we use the smaller value of $512$ in our example code. The second output layer has dimension $\dmodel$, the same as the input. Note that each position of the sequential input gets passed through the identical feed-forward network.
-This is the only place in the transformer architecture where there is nonlinearity.
-It is where the queries, keys and values are learned for the self-attention layers of the encoder and decoder, as described next.
+Each transformer sublayer has a fully connected feed-forward network consisting of two layers with a single ReLU activation in between. The first layer has dimension $\mathrm{dff}$ which is $2048$ in the paper, while we use the smaller value of $512$ in our example code. The second output layer has dimension $\dmodel$, the same as the input. Note that each position of the sequential input gets passed through the identical feed-forward network. This is the only place in the transformer architecture where there is nonlinearity. It is where the queries, keys and values are learned for the self-attention layers of the encoder and decoder, as described next.
 
 These can be easily implemented using the Sequential API. A slightly simplified version of the code in `feed_forward` is as follows.
 
@@ -303,14 +287,13 @@ def pointwise_feed_forward_network(d_model, dff):
     ])
 ```
 
-
 ## Encoder
 
 The encoder is a stack of $N$ identical encoder layers, where $N=6$ in the paper while we use 4 layers in our example. The output of the encoder, which is the output of the last encoder layer, is a sequence of elements in $\dmodel$-dimensions space of the same length as the sequence input to the encoder. This output $x$ is learned in the encoder layers to serve as a key-value lookup of the form $(x, x)$ (from $\dmodel$-space into $\dmodel$-space). This lookup is the information that is passed from the encoder to the decoder, where the decoder queries the lookup from its own input.
 
 ### Encoder Layer
 
-Each encoder layer consists of a self-attention sublayer followed by a feed-forward sublayer. This is naturally implemented with the Sequential API. The following is (a slightly simplified version of) the function from `encoder.py` which creates the encoder layer.
+Each encoder layer consists of a self-attention sublayer followed by a feed-forward sublayer. This is naturally implemented with the Sequential API. The following is (a slightly simplified version of) the function from `r py_anchor('encoder.py', base_dir = 'transformer')` which creates the encoder layer.
 
 ```{python encoder-layer}
 def encoder_layer(d_model, num_heads, dff, dropout_rate):
@@ -323,7 +306,7 @@ def encoder_layer(d_model, num_heads, dff, dropout_rate):
     ])
 ```
 
-The encoder itself can be simply implemented using the Sequential API. The `encoder` function from `encoder.py` implements the entire encoder stack including the input embeddings.
+The encoder itself can be simply implemented using the Sequential API. The `encoder` function from `r py_anchor('encoder.py', base_dir = 'transformer')` implements the entire encoder stack including the input embeddings.
 
 ```{python encoder}
 def encoder(num_layers, d_model, num_heads, dff, input_vocab_size,
@@ -344,10 +327,9 @@ The decoder is a stack of $N$ identical decoder layers. The output of the decode
 
 ### Decoder Layer
 
-Each decoder layer begins with a self-attention layer using the auto-regressive mask to prevent position $i$ attending on (i.e. looking up) a position $j>i$. Note that since the target is shifted by one, position $i$ should still looks up itself.
-This is followed by the encoder-decoder attention sublayer which uses the output of the self-attention decoder sublayer as a query to the key-value lookup output by the encoder. The third sublayer is the feed-forward sublayer.
+Each decoder layer begins with a self-attention layer using the auto-regressive mask to prevent position $i$ attending on (i.e. looking up) a position $j>i$. Note that since the target is shifted by one, position $i$ should still looks up itself. This is followed by the encoder-decoder attention sublayer which uses the output of the self-attention decoder sublayer as a query to the key-value lookup output by the encoder. The third sublayer is the feed-forward sublayer.
 
-We cannot use the Sequential API for the decoder layer since it takes two inputs: the encoder output and the decoder input. It can naturally be implemented using the Functional API. This is (a slightly simplified version of) the decoder layer creation function from `decoder.py`.
+We cannot use the Sequential API for the decoder layer since it takes two inputs: the encoder output and the decoder input. It can naturally be implemented using the Functional API. This is (a slightly simplified version of) the decoder layer creation function from `r py_anchor('decoder.py', base_dir = 'transformer')`.
 
 ```{python decoder-layer}
 def decoder_layer(d_model, num_heads, dff, dropout_rate):
@@ -374,7 +356,8 @@ def decoder_layer(d_model, num_heads, dff, dropout_rate):
     return Model(inputs=[encoder_output, decoder_input], outputs=outputs)
 ```
 
-The decoder itself including the inputs can then also be implemented with the Functional API. From `decoder.py`:
+The decoder itself including the inputs can then also be implemented with the Functional API. From `r py_anchor('decoder.py', base_dir = 'transformer')`:
+
 ```{python decoder}
 def decoder(num_layers, d_model, num_heads, dff, target_vocab_size,
             maximum_position_encoding, dropout_rate=0.1):
@@ -404,9 +387,10 @@ Note that unlike the decoder layers the shape for the `decoder_input` is `(None,
 
 The final transformer model has two inputs, the tokenized encoder and decoder sequences. First the encoder input is fed to the stack of encoder layers, and the resulting output is combined with the decoder input to feed to the stack of decoder layers. The decoder output is then passed to a final fully connected layer whose dimension is the size of the target vocabulary (i.e. number of symbols), so that the model output can predict target symbols. More precisely, as an auto-regressive model it is predicting the next-symbol probabilities.
 
-In @attention[\S3.4] it is stated that the encoder and decoder embedding layers and the final fully connected layer all share the same weight matrix, and thus all have the same symbol embedding. This method is introduced in @weight-tying, where is it claimed for example that using a standard subword tokenizer an English/French translation task show up to 90% of the same subwords. For this method the union of the subwords is taken so that the the source/target vocabularies are the same. In our implementation, the source and target vocabularies are not merged and these three weight matrices are all learned separately.
+In @attention [\S3.4] it is stated that the encoder and decoder embedding layers and the final fully connected layer all share the same weight matrix, and thus all have the same symbol embedding. This method is introduced in @weight-tying, where is it claimed for example that an English/French translation task shares up to 90% of the same subwords (using the byte pair encoding compression algorithm for tokenization, rather than WodPiece used here). For this method the union of the subwords is taken so that the the source/target vocabularies are the same. In our implementation, the source and target vocabularies are not merged and these three weight matrices are all learned separately.
 
-The transformer can be implemented naturally using the Functional API. The code in `transformer.py` is slightly simplified as follows.
+The transformer can be implemented naturally using the Functional API. The code in `r py_anchor('transformer.py', base_dir = 'transformer')` is slightly simplified as follows.
+
 ```{python transformer-model}
 def transformer(num_layers, d_model, num_heads, dff,
                 input_vocab_size, target_vocab_size,
@@ -429,5 +413,4 @@ def transformer(num_layers, d_model, num_heads, dff,
     return Model(inputs=[encoder_input, decoder_input], outputs=final_output)
 ```
 
-It is crucial to note that the mask on the `decoder_output` is propagated through the `transformer` model.
-The is used by the loss function, which ensures that the padding at the end of the sequences is not included in the loss calculation (but see the caveat in the Loss section). Similarly the mask is used by the metrics, in our case the accuracy metric, ignoring the padding for the metric calculation.
+It is crucial to note that the mask on the `decoder_output` is propagated through the `transformer` model. The is used by the loss function, which ensures that the padding at the end of the sequences is not included in the loss calculation (but see the caveat in the Loss section). Similarly the mask is used by the metrics, in our case the accuracy metric, ignoring the padding for the metric calculation.

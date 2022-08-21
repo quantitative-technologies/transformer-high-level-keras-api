@@ -239,8 +239,9 @@ div.csl-indent {
 <div id="tokenizers" class="section level2 hasAnchor" number="2.1">
 <h2><span class="header-section-number">2.1</span> Tokenizers<a href="data.html#tokenizers" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>As usual for language modeling, sentences in some language must be converted to sequences of integers in order to serve as input for a neural network, in a process called <em>tokenization</em>.
-The input sentences are tokenized using the class <code>SubwordTokenizer</code> in the script <code>tokenizer/subword_tokenizer.py</code>. It is closely based on the <code>CustomTokenizer</code> class from the <a href="https://www.tensorflow.org/text/guide/subwords_tokenizer" title="Subword tokenizers">Subword tokenizer tutorial</a> which is in turn based on the <code>BertTokenizer</code> from <code>tensorflow_text</code>.</p>
-<p>The script <code>prepare_tokenizers.py</code> provides the <code>prepare_tokenizers</code> function which builds a pair of <code>SubwordTokenizer</code>s from the input examples and saves them to disk for later reuse, as they take some time to build. The parameters below indicate that all text is converted to lowercase and that the maximum vocabulary size of both the inputs and targets is <span class="math inline">\(2^{13} = 8192\)</span>.</p>
+The input sentences are tokenized using the class <code>SubwordTokenizer</code> in the script <a href="https://github.com/quantitative-technologies/transformer-high-level-keras-api/blob/master/inst/python/tokenizer/subword_tokenizer.py"><code>tokenizer/subword_tokenizer.py</code></a>. It is closely based on the <code>CustomTokenizer</code> class from the <a href="https://www.tensorflow.org/text/guide/subwords_tokenizer" title="Subword tokenizers">Subword tokenizer tutorial</a> which is in turn based on the <code>BertTokenizer</code> from <code>tensorflow_text</code>.</p>
+<p>From the tutorial: “The main advantage of a subword tokenizer is that it interpolates between word-based and character-based tokenization. Common words get a slot in the vocabulary, but the tokenizer can fall back to word pieces and individual characters for unknown words.” <code>SubwordTokenizer</code> takes a sentence and first splits it into words using BERT’s token splitting algorithm and then applies a subword tokenizer using the <a href="https://www.tensorflow.org/text/guide/subwords_tokenizer#applying_wordpiece">WordPiece algorithm</a>.</p>
+<p>The script <a href="https://github.com/quantitative-technologies/transformer-high-level-keras-api/blob/master/inst/python/prepare_tokenizers.py"><code>prepare_tokenizers.py</code></a> provides the <code>prepare_tokenizers</code> function which builds a pair of <code>SubwordTokenizer</code>s from the input examples and saves them to disk for later reuse, as they take some time to build. The parameters below indicate that all text is converted to lowercase and that the maximum vocabulary size of both the inputs and targets is <span class="math inline">\(2^{13} = 8192\)</span>.</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb5-1"><a href="data.html#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> prepare_tokenizers <span class="im">import</span> prepare_tokenizers</span>
 <span id="cb5-2"><a href="data.html#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-3"><a href="data.html#cb5-3" aria-hidden="true" tabindex="-1"></a>TRAIN_DIR <span class="op">=</span> <span class="st">&#39;train&#39;</span></span>
@@ -294,7 +295,7 @@ Note that the tokenizer has added special start and end tokens accordingly to th
 <p>The result is a <code>tf.data</code> dataset which return a tuple of <code>(inputs, targets)</code> for each batch. As is typical for Encoder–Decoder auto-regressive sequence-to-sequence architectures, the input is of the form <code>(encoder_inpout, decoder_input)</code> where <code>encoder_input</code> is the tokenized source sentence and <code>decoder_input</code> is tokenized target sentence with the last token dropped;
 while <code>targets</code> is the tokenized target sentence lagged by one for autoregression.</p>
 <p>The input pipeline encapsulated in our <code>Dataset</code> class follows the <a href="https://www.tensorflow.org/guide/data_performance" title="Better performance with the tf.data API">TensorFlow Data Pipeline Performance Guide</a>:</p>
-<p><strong><code>transformer/dataset.py</code></strong></p>
+<p><strong><a href="https://github.com/quantitative-technologies/transformer-high-level-keras-api/blob/master/inst/python/transformer/dataset.py"><code>transformer/dataset.py</code></a></strong></p>
 <div class="sourceCode" id="cb17"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb17-1"><a href="data.html#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> tensorflow <span class="im">as</span> tf</span>
 <span id="cb17-2"><a href="data.html#cb17-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb17-3"><a href="data.html#cb17-3" aria-hidden="true" tabindex="-1"></a>BUFFER_SIZE <span class="op">=</span> <span class="dv">20000</span></span>
@@ -357,28 +358,28 @@ while <code>targets</code> is the tokenized target sentence lagged by one for au
 <span id="cb18-12"><a href="data.html#cb18-12" aria-hidden="true" tabindex="-1"></a>                                  num_parallel_calls<span class="op">=</span>tf.data.experimental.AUTOTUNE)                           </span>
 <span id="cb18-13"><a href="data.html#cb18-13" aria-hidden="true" tabindex="-1"></a>batch1 <span class="op">=</span> <span class="bu">next</span>(<span class="bu">iter</span>(data_train))</span>
 <span id="cb18-14"><a href="data.html#cb18-14" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(batch1)</span></code></pre></div>
-<pre><code>## ({&#39;encoder_input&#39;: &lt;tf.Tensor: shape=(64, 31), dtype=int64, numpy=
-## array([[   2, 2341, 7980, ...,    3,    0,    0],
-##        [   2,  553,   83, ...,    0,    0,    0],
-##        [   2,  122,   14, ...,    0,    0,    0],
+<pre><code>## ({&#39;encoder_input&#39;: &lt;tf.Tensor: shape=(64, 39), dtype=int64, numpy=
+## array([[   2,  101,  129, ...,    0,    0,    0],
+##        [   2,  108,   44, ...,    0,    0,    0],
+##        [   2,   39,   39, ...,    0,    0,    0],
 ##        ...,
-##        [   2,   85,  436, ...,    0,    0,    0],
-##        [   2,  122,   14, ...,    0,    0,    0],
-##        [   2,  108,  147, ...,    0,    0,    0]])&gt;, &#39;decoder_input&#39;: &lt;tf.Tensor: shape=(64, 32), dtype=int64, numpy=
-## array([[  2,  72, 100, ...,   0,   0,   0],
-##        [  2,  82,  78, ...,   0,   0,   0],
-##        [  2,  82,  90, ...,   0,   0,   0],
+##        [   2,  473, 4392, ...,    0,    0,    0],
+##        [   2,   85, 2443, ...,    0,    0,    0],
+##        [   2,  932,   91, ...,    0,    0,    0]])&gt;, &#39;decoder_input&#39;: &lt;tf.Tensor: shape=(64, 36), dtype=int64, numpy=
+## array([[   2,   45,  125, ...,    0,    0,    0],
+##        [   2,   81,   80, ...,    0,    0,    0],
+##        [   2,   36,   36, ...,    0,    0,    0],
 ##        ...,
-##        [  2,  37, 217, ...,   0,   0,   0],
-##        [  2,  82,  90, ...,   0,   0,   0],
-##        [  2,  81, 324, ...,   0,   0,   0]])&gt;}, &lt;tf.Tensor: shape=(64, 32), dtype=int64, numpy=
-## array([[  72,  100,   83, ...,    0,    0,    0],
-##        [  82,   78,  126, ...,    0,    0,    0],
-##        [  82,   90,  220, ...,    0,    0,    0],
+##        [   2,  116,  267, ...,    0,    0,    0],
+##        [   2,  111, 1882, ...,    0,    0,    0],
+##        [   2,   78,  596, ...,    0,    0,    0]])&gt;}, &lt;tf.Tensor: shape=(64, 36), dtype=int64, numpy=
+## array([[  45,  125, 1082, ...,    0,    0,    0],
+##        [  81,   80,  123, ...,    0,    0,    0],
+##        [  36,   36,   78, ...,    0,    0,    0],
 ##        ...,
-##        [  37,  217, 4298, ...,    0,    0,    0],
-##        [  82,   90,    9, ...,    0,    0,    0],
-##        [  81,  324,   97, ...,    0,    0,    0]])&gt;)</code></pre>
+##        [ 116,  267,  240, ...,    0,    0,    0],
+##        [ 111, 1882,   30, ...,    0,    0,    0],
+##        [  78,  596, 2960, ...,    0,    0,    0]])&gt;)</code></pre>
 
 </div>
 </div>
