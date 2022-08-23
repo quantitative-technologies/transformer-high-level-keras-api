@@ -1,6 +1,6 @@
 # Transformer Architecture {#architecture}
 
-```{r architecture, echo=FALSE, fig.cap="Transformer", fig.align='center'}
+```{r architecture, echo=FALSE, fig.cap="Transformer", fig.align='center', out.width='500pt'}
 #knitr::include_graphics(file.path(here::here(), "book", "transformer.png"))
 #path <- file.path(working_dir, "images", "transformer.png")
 #print(file.exists(path))
@@ -8,7 +8,7 @@
 knitr::include_graphics('images/transformer.png')
 ```
 
-The transformer has an encoder-decoder structure as is typical for neural sequence transduction models, e.g. language translation. The encoder encodes a sequence of tokens $(x_1,\dots,x_n)$ from the first language to a continuous representation $\mathbf z=(z_1,\dots,z_n)$ in $\dmodel$-dimensional Euclidean space, i.e. each $z_i\in\reals^{\dmodel}$. The decoder the maps this representation to a sequence of tokens $(y_1,\dots,y_m)$ auto-regressively: each symbol $y_j$ is predicted from $\mathbf z$ and the previously predicted symbols $y_1\dots,y_{j-1}$.
+The transformer has an encoder-decoder structure as is typical for neural sequence transduction models, e.g. language translation. The encoder encodes a sequence of tokens $(x_1,\dots,x_n)$ from the first language to a continuous representation $\mathbf z=(z_1,\dots,z_n)$ in $\dmodel$-dimensional Euclidean space, i.e. each $z_i\in\reals^{\dmodel}$. The decoder the maps this representation to a sequence of tokens $(y_1,\dots,y_m)$ auto-autorepressively: each symbol $y_j$ is predicted from $\mathbf z$ and the previously predicted symbols $y_1\dots,y_{j-1}$.
 
 In all of the code snippets below, the imports are not shown but are included in the following:
 
@@ -176,7 +176,7 @@ Given $n_k$ keys of dimension $d_k$ and $n_v=n_k$ values of dimension $d_v$, pac
   \textrm{Attention}(Q,K,V)=\textrm{softmax}\left(\frac{QK^\top}{\sqrt{d_k}}\right)V,
     (\#eq:attention)
 \end{equation} 
-where the $\mathrm{softmax}$ is rowwise, so that the rows are probability distributions, forming an $n_q\times n_k$ matrix of *attention weights*. Thus the $i^\mathrm{th}$ row of the attention weight matrix gives a probability distribution (i.e. weights) over the values used to resolve the $i^\mathrm{th}$ query, where each weight is determined by the compatibility of the query with the corresponding key.
+where the $\mathrm{softmax}$ is row-wise, so that the rows are probability distributions, forming an $n_q\times n_k$ matrix of *attention weights*. Thus the $i^\mathrm{th}$ row of the attention weight matrix gives a probability distribution (i.e. weights) over the values used to resolve the $i^\mathrm{th}$ query, where each weight is determined by the compatibility of the query with the corresponding key.
 
 In the case of sequence-to-sequence models, the $i^\mathrm{th}$ query corresponds to the $i^\mathrm{th}$ position of the input sequence and the $j^\mathrm{th}$ key/value pair corresponds to the $j^\mathrm{th}$ position of the target sequence, so that the attention mechanism determines how much weight is given to this pair in the output.
 
@@ -387,7 +387,7 @@ Note that unlike the decoder layers the shape for the `decoder_input` is `(None,
 
 The final transformer model has two inputs, the tokenized encoder and decoder sequences. First the encoder input is fed to the stack of encoder layers, and the resulting output is combined with the decoder input to feed to the stack of decoder layers. The decoder output is then passed to a final fully connected layer whose dimension is the size of the target vocabulary (i.e. number of symbols), so that the model output can predict target symbols. More precisely, as an auto-regressive model it is predicting the next-symbol probabilities.
 
-In @attention [\S3.4] it is stated that the encoder and decoder embedding layers and the final fully connected layer all share the same weight matrix, and thus all have the same symbol embedding. This method is introduced in @weight-tying, where is it claimed for example that an English/French translation task shares up to 90% of the same subwords (using the byte pair encoding compression algorithm for tokenization, rather than WodPiece used here). For this method the union of the subwords is taken so that the the source/target vocabularies are the same. In our implementation, the source and target vocabularies are not merged and these three weight matrices are all learned separately.
+In @attention [\S3.4] it is stated that the encoder and decoder embedding layers and the final fully connected layer all share the same weight matrix, and thus all have the same symbol embedding. This method is introduced in @weight-tying, where is it claimed for example that an English/French translation task shares up to 90% of the same subwords (using the byte pair encoding compression algorithm for tokenization, rather than WordPiece used here). For this method the union of the subwords is taken so that the the source/target vocabularies are the same. In our implementation, the source and target vocabularies are not merged and these three weight matrices are all learned separately.
 
 The transformer can be implemented naturally using the Functional API. The code in `r py_anchor('transformer.py', base_dir = 'transformer')` is slightly simplified as follows.
 

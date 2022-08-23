@@ -6,7 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>Chapter 2 Data | Transformer Implementation with the High-Level Keras API</title>
   <meta name="description" content="This is an transformer implementation from scratch using the Keras API." />
-  <meta name="generator" content="bookdown 0.26 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.28 and GitBook 2.6.7" />
 
   <meta property="og:title" content="Chapter 2 Data | Transformer Implementation with the High-Level Keras API" />
   <meta property="og:type" content="book" />
@@ -358,28 +358,28 @@ while <code>targets</code> is the tokenized target sentence lagged by one for au
 <span id="cb18-12"><a href="data.html#cb18-12" aria-hidden="true" tabindex="-1"></a>                                  num_parallel_calls<span class="op">=</span>tf.data.experimental.AUTOTUNE)                           </span>
 <span id="cb18-13"><a href="data.html#cb18-13" aria-hidden="true" tabindex="-1"></a>batch1 <span class="op">=</span> <span class="bu">next</span>(<span class="bu">iter</span>(data_train))</span>
 <span id="cb18-14"><a href="data.html#cb18-14" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(batch1)</span></code></pre></div>
-<pre><code>## ({&#39;encoder_input&#39;: &lt;tf.Tensor: shape=(64, 39), dtype=int64, numpy=
-## array([[   2,  101,  129, ...,    0,    0,    0],
-##        [   2,  108,   44, ...,    0,    0,    0],
-##        [   2,   39,   39, ...,    0,    0,    0],
+<pre><code>## ({&#39;encoder_input&#39;: &lt;tf.Tensor: shape=(64, 35), dtype=int64, numpy=
+## array([[   2,   44,   40, ...,    0,    0,    0],
+##        [   2,  131, 1926, ...,    0,    0,    0],
+##        [   2,   91,  231, ...,    0,    0,    0],
 ##        ...,
-##        [   2,  473, 4392, ...,    0,    0,    0],
-##        [   2,   85, 2443, ...,    0,    0,    0],
-##        [   2,  932,   91, ...,    0,    0,    0]])&gt;, &#39;decoder_input&#39;: &lt;tf.Tensor: shape=(64, 36), dtype=int64, numpy=
-## array([[   2,   45,  125, ...,    0,    0,    0],
-##        [   2,   81,   80, ...,    0,    0,    0],
-##        [   2,   36,   36, ...,    0,    0,    0],
+##        [   2,   10,  176, ...,    0,    0,    0],
+##        [   2,   44,  107, ...,    0,    0,    0],
+##        [   2,   88,  879, ...,    0,    0,    0]])&gt;, &#39;decoder_input&#39;: &lt;tf.Tensor: shape=(64, 39), dtype=int64, numpy=
+## array([[  2,  72, 102, ...,   0,   0,   0],
+##        [  2,  83, 280, ...,   0,   0,   0],
+##        [  2,  71, 155, ...,   0,   0,   0],
 ##        ...,
-##        [   2,  116,  267, ...,    0,    0,    0],
-##        [   2,  111, 1882, ...,    0,    0,    0],
-##        [   2,   78,  596, ...,    0,    0,    0]])&gt;}, &lt;tf.Tensor: shape=(64, 36), dtype=int64, numpy=
-## array([[  45,  125, 1082, ...,    0,    0,    0],
-##        [  81,   80,  123, ...,    0,    0,    0],
-##        [  36,   36,   78, ...,    0,    0,    0],
+##        [  2,  10, 189, ...,   0,   0,   0],
+##        [  2,  72,  75, ...,   0,   0,   0],
+##        [  2, 115, 217, ...,   0,   0,   0]])&gt;}, &lt;tf.Tensor: shape=(64, 39), dtype=int64, numpy=
+## array([[ 72, 102, 147, ...,   0,   0,   0],
+##        [ 83, 280,  71, ...,   0,   0,   0],
+##        [ 71, 155, 569, ...,   0,   0,   0],
 ##        ...,
-##        [ 116,  267,  240, ...,    0,    0,    0],
-##        [ 111, 1882,   30, ...,    0,    0,    0],
-##        [  78,  596, 2960, ...,    0,    0,    0]])&gt;)</code></pre>
+##        [ 10, 189,  11, ...,   0,   0,   0],
+##        [ 72,  75,   9, ...,   0,   0,   0],
+##        [115, 217,  50, ...,   0,   0,   0]])&gt;)</code></pre>
 
 </div>
 </div>
@@ -449,7 +449,7 @@ gitbook.start({
     var script = document.createElement("script");
     script.type = "text/javascript";
     var src = "true";
-    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (src === "" || src === "true") src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML";
     if (location.protocol !== "file:")
       if (/^https?:/.test(src))
         src = src.replace(/^https?:/, '');

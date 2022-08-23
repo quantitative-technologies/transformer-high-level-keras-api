@@ -6,7 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>Chapter 3 Transformer Architecture | Transformer Implementation with the High-Level Keras API</title>
   <meta name="description" content="This is an transformer implementation from scratch using the Keras API." />
-  <meta name="generator" content="bookdown 0.26 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.28 and GitBook 2.6.7" />
 
   <meta property="og:title" content="Chapter 3 Transformer Architecture | Transformer Implementation with the High-Level Keras API" />
   <meta property="og:type" content="book" />
@@ -216,7 +216,7 @@ div.csl-indent {
 <div id="architecture" class="section level1 hasAnchor" number="3">
 <h1><span class="header-section-number">Chapter 3</span> Transformer Architecture<a href="architecture.html#architecture" class="anchor-section" aria-label="Anchor link to header"></a></h1>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:architecture"></span>
-<img src="images/transformer.png" alt="Transformer" width="318" />
+<img src="images/transformer.png" alt="Transformer" width="500pt" />
 <p class="caption">
 Figure 3.1: Transformer
 </p>
@@ -422,10 +422,12 @@ where the <span class="math inline">\(\mathrm{softmax}\)</span> is rowwise, so t
 <span id="cb26-13"><a href="architecture.html#cb26-13" aria-hidden="true" tabindex="-1"></a>        output <span class="op">=</span> <span class="va">self</span>.dense(scaled_attention)  <span class="co"># (batch_size, seq_len_q, d_model)</span></span>
 <span id="cb26-14"><a href="architecture.html#cb26-14" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb26-15"><a href="architecture.html#cb26-15" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> output, attention_weights</span></code></pre></div>
-<p>This layer performs the calculation: <span class="math display">\[\begin{equation}
+<p>This layer performs the calculation:
+<span class="math display" id="eq:single-attention">\[\begin{equation}
   \operatorname{SingleHeadAttention}(Q, K, V)=\operatorname{Attention}(Q, K, V)W^O,
-   (\#eq:single-attention)
-\end{equation}\]</span> where <span class="math inline">\(W^O\in\mathbb R^{d_v\times d_\mathrm{model}}\)</span> is the learned linear projection of the scaled dot-product to <span class="math inline">\(d_\mathrm{model}\)</span>-space. Note that even though we shall always have <span class="math inline">\(d_v=d_\mathrm{model}\)</span> the projection is still important to orient the output, since it is used in calculations such as <span class="math inline">\(x+\operatorname{SingleHeadAttention}(x,x,x)\)</span> where the orientation of the output becomes relevant. Indeed we verified that while the transformer still learns without the final projection, the results are substantially worse. (We did not make actual benchmarks, but simply inspected the model outputs after training for the same number of epochs in each case.)</p>
+   \tag{3.2}
+\end{equation}\]</span>
+where <span class="math inline">\(W^O\in\mathbb R^{d_v\times d_\mathrm{model}}\)</span> is the learned linear projection of the scaled dot-product to <span class="math inline">\(d_\mathrm{model}\)</span>-space. Note that even though we shall always have <span class="math inline">\(d_v=d_\mathrm{model}\)</span> the projection is still important to orient the output, since it is used in calculations such as <span class="math inline">\(x+\operatorname{SingleHeadAttention}(x,x,x)\)</span> where the orientation of the output becomes relevant. Indeed we verified that while the transformer still learns without the final projection, the results are substantially worse. (We did not make actual benchmarks, but simply inspected the model outputs after training for the same number of epochs in each case.)</p>
 <div id="multi-head-attention" class="section level4 hasAnchor" number="3.5.2.1">
 <h4><span class="header-section-number">3.5.2.1</span> Multi-Head Attention<a href="architecture.html#multi-head-attention" class="anchor-section" aria-label="Anchor link to header"></a></h4>
 <p>The multi-head attention splits the attention mechanism into <span class="math inline">\(n\)</span> separate “heads”, each with their own representation of the queries, keys and values. They run in parallel, allowing the model to attend simultaneously to different position pairs in different representation spaces: <span class="math display">\[\begin{equation}
@@ -433,7 +435,7 @@ where the <span class="math inline">\(\mathrm{softmax}\)</span> is rowwise, so t
 \end{equation}\]</span> where <span class="math inline">\(\operatorname{Concat}\)</span> is row-wise concatenation and <span class="math display">\[\begin{equation}
   \mathrm{head}_i=\operatorname{Attention}(Q W_i^Q, K W_i^K , V W_i^V),
 \end{equation}\]</span> and <span class="math inline">\(W_i^Q\in\mathbb R^{d_{\mathrm{model}}\times d_k}\)</span>, <span class="math inline">\(W_i^K\in\mathbb R^{d_{\mathrm{model}}\times d_k}\)</span>, <span class="math inline">\(W_i^V\in\mathbb R^{d_{\mathrm{model}}\times d_v}\)</span> and <span class="math inline">\(W^O\in\mathbb R^{h d_v\times{d_{\mathrm{model}}}}\)</span> are projections.</p>
-<p>In transformer architecture, the representation spaces are all of dimensions <span class="math inline">\(d_q=d_k=d_v=d_{\mathrm{model}}\mathbin{/}h\)</span>. We use <span class="math inline">\(h=8\)</span> heads as in the original paper, and saw an visible improvement of the single-head architecture. As noted in the paper, a single-head attention cannot simultaneously attend differently in different representation subspaces. If one tries to add projections <span class="math inline">\(W^Q\)</span>, <span class="math inline">\(W^K\)</span> and <span class="math inline">\(W^V\)</span> in equation <a href="#eq:single-attention">(<strong>??</strong>)</a>, they will simply be factored out into <span class="math inline">\(W^O\)</span> and have no effect.</p>
+<p>In transformer architecture, the representation spaces are all of dimensions <span class="math inline">\(d_q=d_k=d_v=d_{\mathrm{model}}\mathbin{/}h\)</span>. We use <span class="math inline">\(h=8\)</span> heads as in the original paper, and saw an visible improvement of the single-head architecture. As noted in the paper, a single-head attention cannot simultaneously attend differently in different representation subspaces. If one tries to add projections <span class="math inline">\(W^Q\)</span>, <span class="math inline">\(W^K\)</span> and <span class="math inline">\(W^V\)</span> in equation <a href="architecture.html#eq:single-attention">(3.2)</a>, they will simply be factored out into <span class="math inline">\(W^O\)</span> and have no effect.</p>
 <p>The code for the <code>MultiHeadAttention</code> class is in <a href="https://github.com/quantitative-technologies/transformer-high-level-keras-api/blob/master/inst/python/transformer/attention.py"><code>attention.py</code></a> and is nearly the same as the corresponding class in the <a href="https://www.tensorflow.org/tutorials/text/transformer" title="Transformer model for language understanding">official transformer tutorial</a>, except that the <code>call</code> method signature has been modified to conform with the Keras API.</p>
 </div>
 <div id="contextual-embeddings" class="section level4 hasAnchor" number="3.5.2.2">
@@ -644,7 +646,7 @@ gitbook.start({
     var script = document.createElement("script");
     script.type = "text/javascript";
     var src = "true";
-    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (src === "" || src === "true") src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML";
     if (location.protocol !== "file:")
       if (/^https?:/.test(src))
         src = src.replace(/^https?:/, '');
