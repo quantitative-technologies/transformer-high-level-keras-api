@@ -1,10 +1,15 @@
 # Transformer Architecture {#architecture}
+```{r set-figure, echo=FALSE}
+out_width <- if (knitr::is_html_output('500pt')) {
+  '500pt'
+} else if (knitr::is_latex_output()) {
+  '250pt'
+} else {
+  NULL
+}
+```
 
-```{r architecture, echo=FALSE, fig.cap="Transformer", fig.align='center', out.width='500pt'}
-#knitr::include_graphics(file.path(here::here(), "book", "transformer.png"))
-#path <- file.path(working_dir, "images", "transformer.png")
-#print(file.exists(path))
-#path2 <- '/home/user/projects/transformer-high-level-keras-api/book/images/transformer.png'
+```{r architecture, echo=FALSE, fig.cap="Transformer", fig.align='center', out.width=out_width}
 knitr::include_graphics('images/transformer.png')
 ```
 

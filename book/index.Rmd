@@ -3,8 +3,10 @@ title: "Transformer Implementation with the High-Level Keras API"
 author: "James Hirschorn"
 date: "June 22, 2021"
 site: bookdown::bookdown_site
-output: bookdown::gitbook
-documentclass: book
+output: 
+  bookdown::gitbook: default
+  bookdown::pdf_document2: default
+#documentclass: book
 bibliography: bibliography.bib
 biblio-style: apalike
 link-citations: yes
