@@ -1,9 +1,16 @@
 .Rproj.user/**
 inst/python/train/*
 inst/python/tokenizers/*
+inst/python/~/*
 **/__pycache__
 **/_main.*
 html2pdf*
 **/README_cache/**
 .Rproj.user
 .idea/**
+.Rbuildignore
+**/Pipfile
+R/_bookdown_files/*
+R/index.Rmd
+
+
