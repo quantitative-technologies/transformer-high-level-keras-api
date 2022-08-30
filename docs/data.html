@@ -358,28 +358,28 @@ while <code>targets</code> is the tokenized target sentence lagged by one for au
 <span id="cb18-12"><a href="data.html#cb18-12" aria-hidden="true" tabindex="-1"></a>                                  num_parallel_calls<span class="op">=</span>tf.data.experimental.AUTOTUNE)                           </span>
 <span id="cb18-13"><a href="data.html#cb18-13" aria-hidden="true" tabindex="-1"></a>batch1 <span class="op">=</span> <span class="bu">next</span>(<span class="bu">iter</span>(data_train))</span>
 <span id="cb18-14"><a href="data.html#cb18-14" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(batch1)</span></code></pre></div>
-<pre><code>## ({&#39;encoder_input&#39;: &lt;tf.Tensor: shape=(64, 39), dtype=int64, numpy=
-## array([[   2,   44, 5007, ...,    0,    0,    0],
-##        [   2,   39,   39, ...,    3,    0,    0],
-##        [   2, 2707,   14, ...,    0,    0,    0],
+<pre><code>## ({&#39;encoder_input&#39;: &lt;tf.Tensor: shape=(64, 40), dtype=int64, numpy=
+## array([[   2,  695,   14, ...,    0,    0,    0],
+##        [   2,   88,   44, ...,    0,    0,    0],
+##        [   2, 3248,   86, ...,    0,    0,    0],
 ##        ...,
-##        [   2,   54,  433, ...,    0,    0,    0],
-##        [   2,   91, 1024, ...,    0,    0,    0],
-##        [   2,  133,   14, ...,    3,    0,    0]])&gt;, &#39;decoder_input&#39;: &lt;tf.Tensor: shape=(64, 38), dtype=int64, numpy=
-## array([[   2,   76,  153, ...,    0,    0,    0],
-##        [   2,   45,  598, ...,    0,    0,    0],
-##        [   2, 3310,   13, ...,    0,    0,    0],
+##        [   2,   40,  225, ...,    0,    0,    0],
+##        [   2, 3701,   14, ...,    0,    0,    0],
+##        [   2,  100,  379, ...,    0,    0,    0]])&gt;, &#39;decoder_input&#39;: &lt;tf.Tensor: shape=(64, 37), dtype=int64, numpy=
+## array([[   2,   36,   36, ...,    0,    0,    0],
+##        [   2,   76,  196, ...,    0,    0,    0],
+##        [   2,   96,  127, ...,    0,    0,    0],
 ##        ...,
-##        [   2,   80, 1284, ...,    0,    0,    0],
-##        [   2,  157,   13, ...,    0,    0,    0],
-##        [   2,  110,   13, ...,  854,   15,    0]])&gt;}, &lt;tf.Tensor: shape=(64, 38), dtype=int64, numpy=
-## array([[  76,  153, 1056, ...,    0,    0,    0],
-##        [  45,  598, 3456, ...,    0,    0,    0],
-##        [3310,   13,  102, ...,    0,    0,    0],
+##        [   2,   51,  795, ...,    0,    0,    0],
+##        [   2, 1106, 2294, ...,    0,    0,    0],
+##        [   2, 1507,  101, ...,    0,    0,    0]])&gt;}, &lt;tf.Tensor: shape=(64, 37), dtype=int64, numpy=
+## array([[  36,   36,   77, ...,    0,    0,    0],
+##        [  76,  196,   50, ...,    0,    0,    0],
+##        [  96,  127,   97, ...,    0,    0,    0],
 ##        ...,
-##        [  80, 1284,  144, ...,    0,    0,    0],
-##        [ 157,   13,   71, ...,    0,    0,    0],
-##        [ 110,   13,   45, ...,   15,    3,    0]])&gt;)</code></pre>
+##        [  51,  795, 1173, ...,    0,    0,    0],
+##        [1106, 2294,   74, ...,    0,    0,    0],
+##        [1507,  101,   71, ...,    0,    0,    0]])&gt;)</code></pre>
 
 </div>
 </div>
@@ -431,7 +431,7 @@ gitbook.start({
 "link": null,
 "text": null
 },
-"download": null,
+"download": ["_main.pdf"],
 "search": {
 "engine": "fuse",
 "options": null
